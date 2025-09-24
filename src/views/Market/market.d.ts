@@ -64,3 +64,10 @@ export interface TimeRemainingStrings {
         shiny?: string;
     }
 }
+
+export interface BulgeCanvasProps {
+    src: string;
+    opening: boolean;
+    growDuration: number;
+    style?: React.CSSProperties;
+}

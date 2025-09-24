@@ -62,7 +62,7 @@ export function useUser() {
         if (user) {
             addCachedUserWithData(user);
 
-            if (!location.pathname.startsWith("/rules") && !user.readRulesAt) navigate("/rules");
+            // if (!location.pathname.startsWith("/rules") && !user.readRulesAt) navigate("/rules");
         }
     }, [user, location]);
 

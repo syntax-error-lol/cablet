@@ -42,6 +42,7 @@ export default function Market() {
     const [boosters, setBoosters] = useState<DataBoostersEntity | null>(null);
 
     const particleCanvasRef = useRef<ParticleCanvasRef>(null);
+    const spotlightDimmerRef = useRef<HTMLDivElement>(null);
 
     const playRaritySound = async (r: RarityAnimationTypeEnum) => {
         if (!user.settings) return;
@@ -144,7 +145,7 @@ export default function Market() {
 
                     let particleDelay = 0;
                     if (rarity.animationType === RarityAnimationTypeEnum.CHROMA) particleDelay = 5000;
-                    if (rarity.animationType === RarityAnimationTypeEnum.MYTHICAL) particleDelay = 9000;
+                    if (rarity.animationType === RarityAnimationTypeEnum.MYTHICAL) particleDelay = 8800;
 
                     setTimeout(() => {
                         particleCanvasRef.current?.start();
@@ -154,6 +155,19 @@ export default function Market() {
                     if (rarity.animationType === RarityAnimationTypeEnum.CHROMA) waitTime += 8000;
                     if (rarity.animationType === RarityAnimationTypeEnum.MYTHICAL) waitTime += 20000;
                     if (unlockedBlook.shiny) waitTime += 2000;
+
+                    if (rarity.animationType === RarityAnimationTypeEnum.MYTHICAL) {
+                        const spotlightDimmer = spotlightDimmerRef.current;
+                        if (spotlightDimmer) setTimeout(() => {
+                            playSound("angelic-chords");
+
+                            spotlightDimmer.style.opacity = String(1);
+
+                            setTimeout(() => {
+                                spotlightDimmer.style.opacity = String(0);
+                            }, 10000);
+                        }, 11000);
+                    }
 
                     setTimeout(() => {
                         r(true);
@@ -320,6 +334,11 @@ export default function Market() {
                 <style>{"body{overflow:hidden}"}</style>
 
                 <div className={styles.openModal}>
+                    <div
+                        ref={spotlightDimmerRef}
+                        className={styles.spotlightDimmer}
+                    />
+
                     <div className={styles.openModalBackground}>
                         <img src={resourceIdToPath(currentPack.backgroundId)} />
                     </div>

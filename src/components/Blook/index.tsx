@@ -3,7 +3,7 @@ import styles from "./blook.module.scss";
 
 import { BlookProps } from "./blook.d";
 
-const ERROR_IMAGE = window.constructCDNUrl("/content/blooks/Error.png");
+const ERROR_IMAGE = window.constructCDNUrl("/content/icons/error.png");
 const _cache = new Map<string, string>();
 
 export default function Blook({ custom = false, shiny = false, big = false, src, alt, draggable, className, ...props }: BlookProps) {

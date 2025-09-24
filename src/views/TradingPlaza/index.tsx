@@ -104,8 +104,8 @@ export default function TradingPlaza() {
         else if (minute >= 360 && minute < 420) mix = 1 - (minute - 360) / 60;
         else mix = 0;
 
-        const dayGain = 0.3 * (1 - mix);
-        const nightGain = 0.3 * mix;
+        const dayGain = 0.2 * (1 - mix);
+        const nightGain = 0.2 * mix;
 
         setVolume("trading-plaza-ambience", dayGain > 0 ? gainToDb(dayGain) : gainToDb(0));
         setVolume("trading-plaza-night-ambience", nightGain > 0 ? gainToDb(nightGain) : gainToDb(0));

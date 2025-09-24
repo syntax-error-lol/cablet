@@ -28,6 +28,7 @@
         "react-turnstile": "^1.1.4",
         "react-twemoji": "^0.6.0",
         "react-type-animation": "^3.2.0",
+        "react-window": "^2.1.1",
         "sass": "^1.89.2",
         "slate-react": "^0.112.1",
         "socket.io-client": "^4.8.1",
