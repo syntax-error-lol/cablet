@@ -7,10 +7,12 @@ import { useCachedUser } from "@stores/CachedUserStore/index";
 import { useData } from "@stores/DataStore/index";
 import { useResource } from "@stores/ResourceStore/index";
 import { useAuctionHouse } from "@stores/AuctionHouseStore/index";
+import { useFriend } from "@stores/FriendStore/index";
 import { useUsers } from "@controllers/users/useUsers/index";
 import { useSearchAuction } from "@controllers/auctions/useSearchAuction/index";
 import { useClaimDailyTokens } from "@controllers/quests/useClaimDailyTokens/index";
-import { Auction, Blook, ImageOrVideo, Username, InventoryBlook, InventoryItem, ItemContainer, Title, Button } from "@components/index";
+import { useAddFriend } from "@controllers/friends/useAddFriend/index";
+import { Auction, Blook, ImageOrVideo, Username, InventoryBlook, InventoryItem, ItemContainer, Title, Button, Modal } from "@components/index";
 import { LevelContainer, LookupUserModal, SmallButton, SectionHeader, StatContainer, CosmeticsModal, DailyRewardsModal, StatButton } from "./components";
 import styles from "./dashboard.module.scss";
 
@@ -25,12 +27,14 @@ export default function Dashboard() {
     const { blooks, packs, items, titleIdToText } = useData();
     const { resourceIdToPath } = useResource();
     const { setSearch } = useAuctionHouse();
+    const { isFriendsWith, friendRequests, isRequesting, isRequestedBy } = useFriend();
 
     if (!user) return <Navigate to="/login" />;
 
     const { getUser } = useUsers();
     const { searchAuction } = useSearchAuction();
     const { claimDailyTokens } = useClaimDailyTokens();
+    const { addFriend } = useAddFriend();
 
     const [searchParams] = useSearchParams();
 
@@ -168,9 +172,41 @@ export default function Dashboard() {
                                 .then((res) => createModal(<DailyRewardsModal amount={res.data.tokens} />))
                                 .finally(() => setLoading(false));
                         }}>Daily Rewards</StatButton>}
+
+
                         <StatButton icon="fas fa-cart-shopping" onClick={() => {
                             navigate("/store");
                         }}>Store</StatButton>
+
+                        {viewingUser.id !== user.id && <>
+                            {
+                                !isFriendsWith(viewingUser.id) && !isRequesting(viewingUser.id) && !isRequestedBy(viewingUser.id)
+                                && <StatButton icon="fas fa-user-plus" onClick={() => {
+                                    setLoading(true);
+
+                                    addFriend(viewingUser.id)
+                                        .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
+                                        .finally(() => setLoading(false));
+                                }}>Add Friend</StatButton>
+                            }
+
+                            {isFriendsWith(viewingUser.id)
+                                && <StatButton icon="fas fa-user-xmark" onClick={() => {
+                                    setLoading(true);
+                                }}>Remove Friend</StatButton>
+                            }
+
+                            {isRequesting(viewingUser.id) && <StatButton icon="fas fa-user-xmark">Revoke Request</StatButton>}
+
+                            {isRequestedBy(viewingUser.id) && <StatButton icon="fas fa-user-plus" onClick={() => {
+                                setLoading(true);
+
+                                addFriend(viewingUser.id)
+                                    .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
+                                    .finally(() => setLoading(false));
+                            }}>Accept Request</StatButton>}
+                        </>}
+
                         {viewingUser.id !== user.id && <StatButton icon="fas fa-reply" onClick={() => {
                             setViewingUser(user);
 

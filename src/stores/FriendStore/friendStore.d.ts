@@ -6,5 +6,11 @@ export interface FriendStore extends FriendsFriendsEntity {
     setBlocked: (blocked: PublicUser[]) => void;
 
     isFriendsWith: (userId: string) => boolean;
+    isBlocking: (userId: string) => boolean;
+
+    get friendRequests(): PublicUser[];
+    get sendingRequests(): PublicUser[];
+
     isRequesting: (userId: string) => boolean;
+    isRequestedBy: (userId: string) => boolean;
 }
