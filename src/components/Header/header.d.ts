@@ -4,4 +4,5 @@ export interface HeaderProps {
         link: string,
         text: string
     }
+    glass?: boolean
 }
