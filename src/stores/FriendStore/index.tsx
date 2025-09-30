@@ -49,5 +49,13 @@ export const useFriend = create<FriendStore>((set, get) => ({
         const { friends, friendedBy } = get();
 
         return getFriendRequests({ friends, friendedBy, blocked: [] }).some((u) => u.id === userId);
+    },
+
+    get allFriends() {
+        const { friends, friendedBy } = get();
+
+        const friendedByIds = new Set(friendedBy.map((u) => u.id));
+
+        return friends.filter((f) => friendedByIds.has(f.id));
     }
 }));

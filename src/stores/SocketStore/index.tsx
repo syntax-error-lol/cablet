@@ -73,11 +73,13 @@ export const useSocket = create<SocketStore>((set, get) => ({
             pinging = false;
         });
 
-        socket.onAny((event: string, data: object) => {
-            if (import.meta.env.MODE === "development") console.log({ event, data });
-        });
+        if (import.meta.env.MODE === "development") {
+            socket.onAny((event: string, data: object) => {
+                if (event !== SocketMessageType.PING && event !== SocketMessageType.PONG) console.log({ event, data });
+            });
 
-        if (import.meta.env.MODE === "development") window.socket = socket;
+            window.socket = socket;
+        }
 
         set({ socket });
     }

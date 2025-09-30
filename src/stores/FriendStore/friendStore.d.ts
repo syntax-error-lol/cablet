@@ -13,4 +13,6 @@ export interface FriendStore extends FriendsFriendsEntity {
 
     isRequesting: (userId: string) => boolean;
     isRequestedBy: (userId: string) => boolean;
+
+    get allFriends(): PublicUser[];
 }

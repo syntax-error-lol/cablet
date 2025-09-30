@@ -1,5 +1,5 @@
-import { SocketWrapper } from "./SocketWrapper";
+import { SocketDefiner } from "./SocketDefiner";
 
 export {
-    SocketWrapper
+    SocketDefiner
 };

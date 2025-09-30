@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useChatStore, useChat } from "@stores/ChatStore/index";
@@ -8,10 +7,10 @@ import { useCachedUser } from "@stores/CachedUserStore/index";
 import { useToast } from "@stores/ToastStore/index";
 import { useSound } from "@stores/SoundStore/index";
 
-import { ClientMessage, TypingUser } from "../chatStore.d";
+import { ClientMessage, TypingUser } from "../chatStore";
 import { PermissionTypeEnum, SocketMessageType } from "@blacket/types";
 
-export default function ChatWrapper({ children }: { children: ReactNode }) {
+export default function ChatDefiner() {
     const { messages, room, setReplyingTo } = useChatStore();
     const { fetchMessages } = useChat();
 
@@ -168,5 +167,5 @@ export default function ChatWrapper({ children }: { children: ReactNode }) {
         };
     }, [connected, user, socket]);
 
-    return children;
+    return null;
 }

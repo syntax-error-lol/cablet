@@ -27,7 +27,7 @@ export default function Dashboard() {
     const { blooks, packs, items, titleIdToText } = useData();
     const { resourceIdToPath } = useResource();
     const { setSearch } = useAuctionHouse();
-    const { isFriendsWith, friendRequests, isRequesting, isRequestedBy } = useFriend();
+    const { allFriends, isFriendsWith, friendRequests, isRequesting, isRequestedBy } = useFriend();
 
     if (!user) return <Navigate to="/login" />;
 
@@ -264,7 +264,32 @@ export default function Dashboard() {
                     </div>
 
                     <div className={styles.holdFriends}>
-                        You don't have any friends. Why don't you make some?
+                        {/* You don't have any friends. Why don't you make some? */}
+                        {allFriends.length === 0 && <div className={styles.noFriends}>You don't have any friends. Why don't you make some?</div>}
+                        {allFriends.map((friend) => (
+                            <div
+                                className={styles.friend}
+                                key={friend.id}
+                                data-hoverable
+                                onClick={() => {
+                                    viewUser(friend.username)
+                                        .catch(() => { });
+                                }}
+                            >
+                                <div className={styles.friendAvatarContainer}>
+                                    <Blook
+                                        className={styles.friendAvatar}
+                                        src={getUserAvatarPath(friend)}
+                                        alt="Friend Avatar"
+                                        draggable={false}
+                                        custom={friend.customAvatar ? true : false}
+                                        shiny={friend.avatar?.shiny}
+                                        big={isAvatarBig(friend)}
+                                    />
+                                </div>
+                                <span>{friend.username}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
