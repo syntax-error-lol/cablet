@@ -5,7 +5,6 @@ import { useSocket } from "@stores/SocketStore/index";
 import { useUser } from "@stores/UserStore/index";
 import { useCachedUser } from "@stores/CachedUserStore/index";
 import { useToast } from "@stores/ToastStore/index";
-import { useSound } from "@stores/SoundStore/index";
 
 import { ClientMessage, TypingUser } from "../chatStore";
 import { PermissionTypeEnum, SocketMessageType } from "@blacket/types";
@@ -18,7 +17,6 @@ export default function ChatDefiner() {
     const { user, getUserAvatarPath } = useUser();
     const { addCachedUser } = useCachedUser();
     const { createToast } = useToast();
-    const { playSound } = useSound();
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -64,14 +62,13 @@ export default function ChatDefiner() {
         const cachedUser = await addCachedUser(message.authorId);
 
         if (message.mentions.includes(user.id) || message.replyingTo?.authorId === user.id) {
-            playSound("mention");
-
             useChatStore.setState((s) => ({ mentions: s.mentions + 1 }));
 
             createToast({
                 header: cachedUser.username,
                 body: await parseContent(message.content),
                 icon: getUserAvatarPath(cachedUser),
+                sound: "mention",
                 onClick: () => {
                     navigate("/chat");
                     setReplyingTo(message);

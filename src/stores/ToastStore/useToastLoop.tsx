@@ -1,12 +1,10 @@
 import { useEffect } from "react";
 import { useToast } from "@stores/ToastStore/index";
 import { useModal } from "@stores/ModalStore/index";
-import { useSound } from "@stores/SoundStore/index";
 import { NotificationAccessModal } from "./components";
 
 export function useToastLoop() {
     const { toasts, closeToast } = useToast();
-    const { playSound } = useSound();
     const { createModal } = useModal();
 
     useEffect(() => {
@@ -16,9 +14,8 @@ export function useToastLoop() {
             if (!active) return;
 
             const toast = toasts[0];
-            if (toast && !toast.aboutToClose) {
-                playSound("notification");
 
+            if (toast && !toast.aboutToClose) {
                 try {
                     if (
                         !window.constants.APPLE_DEVICE &&

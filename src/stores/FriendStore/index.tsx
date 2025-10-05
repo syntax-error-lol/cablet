@@ -3,8 +3,9 @@ import { create } from "zustand";
 import {
     isFriendsWith as isFriendsWithCommon,
     isBlocking as isBlockingCommon,
-    getFriendRequests,
-    getSendingRequests
+    getFriendRequests as getFriendRequestsCommon,
+    getSendingRequests as getSendingRequestsCommon,
+    getAllFriends as getAllFriendsCommon
 } from "@blacket/common";
 import { FriendStore } from "./friendStore.d";
 
@@ -28,34 +29,72 @@ export const useFriend = create<FriendStore>((set, get) => ({
         return isBlockingCommon(userId, { friends: [], friendedBy: [], blocked });
     },
 
-    get friendRequests() {
+    getFriendRequests: () => {
         const { friends, friendedBy } = get();
 
-        return getFriendRequests({ friends, friendedBy, blocked: [] });
+        return getFriendRequestsCommon({ friends, friendedBy, blocked: [] });
     },
-    get sendingRequests() {
+    getSendingRequests: () => {
         const { friends, friendedBy } = get();
 
-        return getSendingRequests({ friends, friendedBy, blocked: [] });
+        return getSendingRequestsCommon({ friends, friendedBy, blocked: [] });
     },
 
     isRequesting: (userId) => {
         const { friends, friendedBy } = get();
 
-        return getSendingRequests({ friends, friendedBy, blocked: [] }).some((u) => u.id === userId);
+        return getSendingRequestsCommon({ friends, friendedBy, blocked: [] }).some((u) => u.id === userId);
     },
 
     isRequestedBy: (userId) => {
         const { friends, friendedBy } = get();
 
-        return getFriendRequests({ friends, friendedBy, blocked: [] }).some((u) => u.id === userId);
+        return getFriendRequestsCommon({ friends, friendedBy, blocked: [] }).some((u) => u.id === userId);
     },
 
-    get allFriends() {
+    addFriend: (user) => {
+        const { friends } = get();
+
+        set({ friends: [...friends, user] });
+    },
+
+    addRequest: (user) => {
+        const { friendedBy } = get();
+
+        set({ friendedBy: [...friendedBy, user] });
+    },
+
+    removeFriend: (userId) => {
+        const { friends } = get();
+
+        set({ friends: friends.filter((u) => u.id !== userId) });
+    },
+
+    removeRequest: (userId) => {
+        const { friendedBy } = get();
+
+        set({ friendedBy: friendedBy.filter((u) => u.id !== userId) });
+    },
+
+    blockUser: (user) => {
+        const { blocked, friends, friendedBy } = get();
+
+        set({
+            blocked: [...blocked, user],
+            friends: friends.filter((u) => u.id !== user.id),
+            friendedBy: friendedBy.filter((u) => u.id !== user.id)
+        });
+    },
+
+    unblockUser: (userId) => {
+        const { blocked } = get();
+
+        set({ blocked: blocked.filter((u) => u.id !== userId) });
+    },
+
+    getAllFriends: () => {
         const { friends, friendedBy } = get();
 
-        const friendedByIds = new Set(friendedBy.map((u) => u.id));
-
-        return friends.filter((f) => friendedByIds.has(f.id));
+        return getAllFriendsCommon({ friends, friendedBy, blocked: [] });
     }
 }));

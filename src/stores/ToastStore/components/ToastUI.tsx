@@ -1,12 +1,23 @@
+import { useEffect } from "react";
+import { useToastLoop } from "../useToastLoop";
 import { useToast } from "@stores/ToastStore/index";
+import { useSound } from "@stores/SoundStore/index";
 import { ImageOrVideo } from "@components/index";
 import styles from "../toast.module.scss";
 
 export default function ToastUI() {
+    useToastLoop();
+
     const { toasts, closeToast } = useToast();
-    if (!toasts[0]) return null;
+    const { playSound } = useSound();
 
     const toast = toasts[0];
+
+    useEffect(() => {
+        if (toast && !toast.closing) playSound(toast.sound || "notification");
+    }, [toast]);
+
+    if (!toast) return null;
 
     return (
         <div

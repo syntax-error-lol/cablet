@@ -53,3 +53,9 @@ export enum CosmeticsModalCategory {
 export interface DailyRewardsModalProps {
     amount: number;
 }
+
+export enum FriendsViewMode {
+    ALL,
+    REQUESTS,
+    SENDING
+}

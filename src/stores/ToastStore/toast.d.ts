@@ -12,6 +12,7 @@ export interface Toast {
     header: string;
     body: string;
     icon?: string;
+    sound?: string;
     expires?: number;
     onClick?: () => void;
 
