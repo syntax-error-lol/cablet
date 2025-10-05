@@ -43,7 +43,7 @@ export default function Leaf({ attributes, children, leaf, readOnly }: LeafProps
     }
 
     if (leaf.mention && leaf.content) {
-        if (readOnly) return <span {...attributes} data-mention className="mention" onClick={() => navigate(`/user/${leaf.content!.text}`)}>{mentionUsername}</span>;
+        if (readOnly) return <span {...attributes} data-mention className="mention" onClick={() => navigate(`/dashboard?name=${leaf.content!.text}`)}>{mentionUsername}</span>;
 
         return <span {...attributes} className="mention">{cleanChildren}</span>;
     }
