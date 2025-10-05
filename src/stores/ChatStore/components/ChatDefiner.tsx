@@ -77,24 +77,62 @@ export default function ChatDefiner() {
         }
     };
 
+    // const onChatMessageCreate = (data: ClientMessage) => {
+    //     if (!user) return;
+
+    //     addMention(data);
+
+    //     const nonce = data.nonce;
+    //     if (!nonce) return;
+
+    //     const prevMessage = messagesRef.current.find((m) => m.nonce === nonce);
+    //     if (!prevMessage) return useChatStore.setState((s) => ({
+    //         messages: [{ ...data, nonce: undefined }, ...s.messages]
+    //     }));
+
+    //     const newMessage = { ...prevMessage, ...data, nonce: undefined };
+
+    //     useChatStore.setState((s) => ({
+    //         messages: s.messages.map((m) => (m.nonce === nonce ? newMessage : m))
+    //     }));
+    // };
     const onChatMessageCreate = (data: ClientMessage) => {
         if (!user) return;
 
         addMention(data);
 
         const nonce = data.nonce;
-        if (!nonce) return;
 
-        const prevMessage = messagesRef.current.find((m) => m.nonce === nonce);
-        if (!prevMessage) return useChatStore.setState((s) => ({
-            messages: [{ ...data, nonce: undefined }, ...s.messages]
-        }));
+        if (!nonce) {
+            useChatStore.setState((s) => {
+                if (s.messages.some((m) => m.id === data.id)) return s;
 
-        const newMessage = { ...prevMessage, ...data, nonce: undefined };
+                return {
+                    messages: [{ ...data, nonce: undefined }, ...s.messages]
+                };
+            });
 
-        useChatStore.setState((s) => ({
-            messages: s.messages.map((m) => (m.nonce === nonce ? newMessage : m))
-        }));
+            return;
+        }
+
+        useChatStore.setState((s) => {
+            const messageIndex = s.messages.findIndex((m) => m.nonce === nonce);
+
+            if (messageIndex === -1) {
+                return {
+                    messages: [{ ...data, nonce: undefined }, ...s.messages]
+                };
+            }
+
+            const newMessages = [...s.messages];
+            newMessages[messageIndex] = {
+                ...newMessages[messageIndex],
+                ...data,
+                nonce: undefined
+            };
+
+            return { messages: newMessages };
+        });
     };
 
     const onChatMessageUpdate = (data: ClientMessage) => {
@@ -139,14 +177,20 @@ export default function ChatDefiner() {
 
         fetchMessages(room);
 
+        let tickTimeoutId: any;
+
         const tick = () => {
             const now = Date.now();
 
-            useChatStore.setState((s) => ({
-                usersTyping: s.usersTyping.filter((u) => now - u.startedTypingAt < 2500)
-            }));
+            useChatStore.setState((s) => {
+                const filteredTyping = s.usersTyping.filter((u) => now - u.startedTypingAt < 2500);
 
-            setTimeout(tick, 1000);
+                if (filteredTyping.length === s.usersTyping.length) return s;
+
+                return { usersTyping: filteredTyping };
+            });
+
+            tickTimeoutId = setTimeout(tick, 1000);
         };
 
         tick();
@@ -157,12 +201,14 @@ export default function ChatDefiner() {
         socket.on(SocketMessageType.CHAT_TYPING_STARTED, onChatStartTyping);
 
         return () => {
+            if (tickTimeoutId) clearTimeout(tickTimeoutId);
+
             socket.off(SocketMessageType.CHAT_MESSAGES_CREATE, onChatMessageCreate);
             socket.off(SocketMessageType.CHAT_MESSAGES_UPDATE, onChatMessageUpdate);
             socket.off(SocketMessageType.CHAT_MESSAGES_DELETE, onChatMessagesDelete);
             socket.off(SocketMessageType.CHAT_TYPING_STARTED, onChatStartTyping);
         };
-    }, [connected, user, socket]);
+    }, [connected, user, socket, room]);
 
     return null;
 }
