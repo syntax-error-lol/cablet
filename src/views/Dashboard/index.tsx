@@ -15,6 +15,8 @@ import { useAddFriend } from "@controllers/friends/useAddFriend/index";
 import { useRemoveFriend } from "@controllers/friends/useRemoveFriend/index";
 import { useRevokeRequest } from "@controllers/friends/useRevokeRequest/index";
 import { useDeclineRequest } from "@controllers/friends/useDeclineRequest/index";
+import { useBlockFriend } from "@controllers/friends/useBlockFriend/index";
+import { useUnblockFriend } from "@controllers/friends/useUnblockFriend/index";
 import { Auction, Blook, ImageOrVideo, Username, InventoryBlook, InventoryItem, ItemContainer, Title, Button, Modal } from "@components/index";
 import { LevelContainer, LookupUserModal, SmallButton, SectionHeader, StatContainer, CosmeticsModal, DailyRewardsModal, StatButton } from "./components";
 import styles from "./dashboard.module.scss";
@@ -30,7 +32,7 @@ export default function Dashboard() {
     const { blooks, packs, items, titleIdToText } = useData();
     const { resourceIdToPath } = useResource();
     const { setSearch } = useAuctionHouse();
-    const { getAllFriends, getFriendRequests, getSendingRequests, isFriendsWith, isRequesting, isRequestedBy, friends, friendedBy, blocked } = useFriend();
+    const { getAllFriends, getFriendRequests, getSendingRequests, isFriendsWith, isRequesting, isRequestedBy, isBlocking, friends, friendedBy, blocked } = useFriend();
 
     if (!user) return <Navigate to="/login" />;
 
@@ -42,6 +44,8 @@ export default function Dashboard() {
     const { removeFriend } = useRemoveFriend();
     const { revokeRequest } = useRevokeRequest();
     const { declineRequest } = useDeclineRequest();
+    const { blockFriend } = useBlockFriend();
+    const { unblockFriend } = useUnblockFriend();
 
     const [searchParams] = useSearchParams();
 
@@ -290,6 +294,22 @@ export default function Dashboard() {
                                         .finally(() => setLoading(false));
                                 }}>Decline Request</StatButton>
                             </>}
+
+                            {!isBlocking(viewingUser.id) ? <StatButton icon="fas fa-ban" onClick={() => {
+                                setLoading(true);
+
+                                blockFriend(viewingUser.id)
+                                    .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
+                                    .finally(() => setLoading(false));
+                            }}>Block User</StatButton>
+                                : <StatButton icon="fas fa-smile" onClick={() => {
+                                    setLoading(true);
+
+                                    unblockFriend(viewingUser.id)
+                                        .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
+                                        .finally(() => setLoading(false));
+                                }}>Unblock User</StatButton>
+                            }
                         </>}
 
                         {viewingUser.id !== user.id && <StatButton icon="fas fa-reply" onClick={() => {
