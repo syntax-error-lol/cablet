@@ -6,53 +6,10 @@ import { useUser } from "@stores/UserStore";
 import { useLogin } from "@controllers/auth/useLogin/index";
 import { useRegister } from "@controllers/auth/useRegister/index";
 import { Button, ErrorContainer, Input, Toggle } from "@components/index";
+import { Water } from "./components";
 import styles from "./authentication.module.scss";
 
 import { AuthenticationType, AuthenticationProps } from "./authentication.d";
-
-function calculateWater() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const aspectRatio = width / height;
-
-    const baseAspectRatio = 1.875;
-    const baseTranslateY = -67;
-    const baseRotateX = 80;
-    const baseHeight = 100;
-
-    let translateY = baseTranslateY;
-    let adjustedHeight = baseHeight;
-
-    if (aspectRatio > baseAspectRatio) {
-        const widthFactor = (aspectRatio - baseAspectRatio) / baseAspectRatio;
-
-        translateY = baseTranslateY - (widthFactor * 33);
-        adjustedHeight = baseHeight + (widthFactor * 800);
-    }
-
-    let rotateX = baseRotateX;
-
-    if (height < 768) {
-        const heightFactor = (768 - height) / 768;
-        rotateX = baseRotateX - (heightFactor * 5);
-        adjustedHeight = adjustedHeight + (heightFactor * 25);
-    }
-
-    if (height > 1080) {
-        const tallFactor = (height - 1080) / 1080;
-        adjustedHeight = adjustedHeight + (tallFactor * 20);
-    }
-
-    translateY = Math.max(-120, Math.min(-50, translateY));
-    rotateX = Math.max(70, Math.min(85, rotateX));
-
-    const cssHeight = Math.max(0, (adjustedHeight - 100) / 5);
-
-    return {
-        transform: `translate(-50%, ${translateY}%) perspective(50vh) rotateX(${rotateX}deg)`,
-        height: `${100 + cssHeight}%`
-    };
-}
 
 export default function Authentication({ type }: AuthenticationProps) {
     const [username, setUsername] = useState<string>("");
@@ -115,20 +72,14 @@ export default function Authentication({ type }: AuthenticationProps) {
         }
     };
 
-    const water = calculateWater();
-
     return (
         <>
             <div className={styles.background} style={{
                 // backgroundImage: `url('${window.constructCDNUrl("/content/auth-background.png")}')`
-                backgroundImage: "url('https://files.catbox.moe/kkigs1.webp')"
+                backgroundImage: "url('https://cdn.discordapp.com/attachments/1420555907703640164/1424502904143872102/Untitled3119_20251005170520.png?ex=68e4d7f6&is=68e38676&hm=cd653ede4c74bc347345d788af81dd2b6e3fbc3a9499dd6ef56a987ba4cf837d&')"
             }} />
 
-            <div className={styles.water} style={{
-                backgroundImage: `url('${window.constructCDNUrl("/content/trading-plaza/water.gif")}')`,
-                transform: water.transform,
-                height: water.height
-            }} />
+            <Water />
 
             <div className={styles.container}>
                 <div className={styles.leftSide}>

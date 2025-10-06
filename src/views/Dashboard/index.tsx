@@ -21,6 +21,8 @@ import { Auction, Blook, ImageOrVideo, Username, InventoryBlook, InventoryItem, 
 import { LevelContainer, LookupUserModal, SmallButton, SectionHeader, StatContainer, CosmeticsModal, DailyRewardsModal, StatButton } from "./components";
 import styles from "./dashboard.module.scss";
 
+import { AutoSizer, List } from "react-virtualized";
+
 import { AuctionsAuctionEntity, PrivateUser, PublicUser } from "@blacket/types";
 import { CosmeticsModalCategory, FriendsViewMode } from "./dashboard.d";
 
@@ -53,7 +55,7 @@ export default function Dashboard() {
 
     const [viewingUser, setViewingUser] = useState<PublicUser | PrivateUser>(user);
     const [viewingUserAuctions, setViewingUserAuctions] = useState<AuctionsAuctionEntity[]>([]);
-    const [inventoryLoaded, setInventoryLoaded] = useState<boolean>(false);
+    const [inventoryLoaded, setInventoryLoaded] = useState<boolean>(true);
 
     const [allFriends, setAllFriends] = useState<PublicUser[]>([]);
     const [friendRequests, setFriendRequests] = useState<PublicUser[]>([]);
@@ -61,39 +63,54 @@ export default function Dashboard() {
     const [friendsViewMode, setFriendsViewMode] = useState<FriendsViewMode>(FriendsViewMode.ALL);
 
     const renderFriends = (friends: PublicUser[]) => {
-        return friends.map((friend) => (
-            <div
-                className={styles.friend}
-                key={friend.id}
-                onClick={() => {
-                    viewUser(friend.username)
-                        .catch(() => { });
-                }}
-            >
-                <div className={styles.friendAvatarContainer}>
-                    <Blook
-                        className={styles.friendAvatar}
-                        src={getUserAvatarPath(friend)}
-                        alt="Friend Avatar"
-                        draggable={false}
-                        custom={friend.customAvatar ? true : false}
-                        shiny={friend.avatar?.shiny}
-                        data-big={isAvatarBig(friend)}
-                    />
-                </div>
-                <div className={styles.friendBannerAndInfo}>
-                    <div className={styles.friendBanner}>
-                        <img
-                            src={getUserBannerPath(friend)}
-                            alt="Friend Banner"
-                            draggable={false}
-                        />
-                    </div>
-                    <Username className={styles.friendUsername} user={friend} />
-                    <Title title={friend.titleId} className={styles.friendTitle} />
-                </div>
-            </div>
-        ));
+        return <AutoSizer>
+            {({ height, width }) => (
+                <List
+                    width={width}
+                    height={height}
+                    rowHeight={50}
+                    rowRenderer={({ index, key, style }) => {
+                        const friend = friends[index];
+
+                        return (
+                            <div
+                                className={styles.friend}
+                                key={key}
+                                style={style}
+                                onClick={() => {
+                                    viewUser(friend.username)
+                                        .catch(() => { });
+                                }}
+                            >
+                                <div className={styles.friendAvatarContainer}>
+                                    <Blook
+                                        className={styles.friendAvatar}
+                                        src={getUserAvatarPath(friend)}
+                                        alt="Friend Avatar"
+                                        draggable={false}
+                                        custom={friend.customAvatar ? true : false}
+                                        shiny={friend.avatar?.shiny}
+                                        data-big={isAvatarBig(friend)}
+                                    />
+                                </div>
+                                <div className={styles.friendBannerAndInfo}>
+                                    <div className={styles.friendBanner}>
+                                        <img
+                                            src={getUserBannerPath(friend)}
+                                            alt="Friend Banner"
+                                            draggable={false}
+                                        />
+                                    </div>
+                                    <Username className={styles.friendUsername} user={friend} />
+                                    <Title title={friend.titleId} className={styles.friendTitle} />
+                                </div>
+                            </div>
+                        );
+                    }}
+                    rowCount={friends.length}
+                />
+            )}
+        </AutoSizer>;
     };
 
     const viewUser = (username: string) => new Promise<void>((resolve, reject) => {
@@ -146,7 +163,7 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
-        setInventoryLoaded(false);
+        // setInventoryLoaded(false);
 
         if (!viewingUser) return;
         if (searchParams.get("name") && viewingUser.id === user.id) return;
@@ -403,9 +420,11 @@ export default function Dashboard() {
                     <div className={styles.holdFriends}>
                         {(friendsViewMode === FriendsViewMode.ALL && allFriends.length === 0) && <>You don't have any friends. Why don't you make some?</>}
 
-                        {friendsViewMode === FriendsViewMode.ALL && renderFriends(allFriends)}
-                        {friendsViewMode === FriendsViewMode.REQUESTS && renderFriends(friendRequests)}
-                        {friendsViewMode === FriendsViewMode.SENDING && renderFriends(sendingRequests)}
+                        <div className={styles.holdFriendsList}>
+                            {friendsViewMode === FriendsViewMode.ALL && renderFriends(allFriends)}
+                            {friendsViewMode === FriendsViewMode.REQUESTS && renderFriends(friendRequests)}
+                            {friendsViewMode === FriendsViewMode.SENDING && renderFriends(sendingRequests)}
+                        </div>
                     </div>
                 </div>
             </div>

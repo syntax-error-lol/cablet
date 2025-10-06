@@ -100,6 +100,7 @@ export default function AvatarCategory() {
 
                         searchQuery: search
                     }}
+                    style={{ height: "calc(100% + 150px)"}}
                 />
             </div>
         </>
