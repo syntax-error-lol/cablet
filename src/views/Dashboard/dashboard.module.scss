@@ -667,6 +667,12 @@
     border-radius: 0.5vh;
     margin-left: -1vh;
     margin-right: 1vh;
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+        margin-left: unset;
+        margin-right: unset;
+    }
 }
 
 .friendsViewModeButtons {
@@ -675,6 +681,12 @@
 
     &>* {
         flex: 1;
+    }
+
+    @media screen and (max-width: 768px) {
+        gap: 10px;
+        width: 95%;
+        margin: 0 auto 10px auto;
     }
 }
 
@@ -738,7 +750,14 @@
     font-size: 1.5vh;
     background: rgba(0, 0, 0, 0.2);
     padding: 1vh;
-    border-radius: 0.5vh;
+    border-radius: 0.7vh;
+
+    @media screen and (max-width: 768px) {
+        font-size: 20px;
+        padding: 10px;
+        border-radius: 7px;
+        background: transparent;
+    }
 }
 
 .holdFriendsList {
@@ -942,6 +961,14 @@
 
 .friendAvatarContainer {
     width: 20%;
+
+    @media screen and (max-width: 768px) {
+        width: 15%;
+        height: 70px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 7px;
+        padding: 2px 7px;
+    }
 }
 
 .friendAvatar {
@@ -953,6 +980,11 @@
     &[data-big="true"] {
         transform: scale(1.4);
         margin-left: -1.4vh;
+
+        @media screen and (max-width: 768px) {
+            transform: scale(1);
+            margin-left: 0;
+        }
     }
 }
 
@@ -960,8 +992,15 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    width: 80%;
+    width: 75%;
     height: 7vh;
+
+    @media screen and (max-width: 768px) {
+
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 7px;
+        padding: 7px 0;
+    }
 }
 
 .friendBanner {
@@ -983,6 +1022,11 @@
     transform: translateX(-50%);
     font-size: 1.75vh;
     user-select: none;
+
+    @media screen and (max-width: 768px) {
+        top: 15%;
+        font-size: 20px;
+    }
 }
 
 .friendTitle {
@@ -992,4 +1036,13 @@
     transform: translateX(-50%);
     font-size: 1.25vh;
     user-select: none;
+
+    @media screen and (max-width: 768px) {
+        font-size: 13px;
+    }
+}
+
+.mobileFriendsModalBody {
+    height: 60vh;
+    margin-top: -4vh;
 }

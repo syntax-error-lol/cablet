@@ -1,0 +1,178 @@
+import { useState } from "react";
+import { Navigate, Link, useNavigate } from "react-router-dom";
+import { Tooltip } from "react-tooltip";
+import { useLoading } from "@stores/LoadingStore";
+import { useModal } from "@stores/ModalStore";
+import { useUser } from "@stores/UserStore/index";
+import { useData } from "@stores/DataStore/index";
+import { useSettings } from "@controllers/settings/useSettings/index";
+import { Modal, Button } from "@components/index";
+import {
+    SettingsContainer,
+    PlanText,
+    UpgradeButton,
+    ChangeUsernameModal,
+    ChangePasswordModal,
+    EnableOTPModal,
+    DisableOTPModal,
+    ManageSecurityKeysModal
+} from "./components/index";
+import styles from "./settings.module.scss";
+
+import { SettingFriendRequestEnum } from "@blacket/types";
+
+export default function Settings() {
+    const { setLoading } = useLoading();
+    const { createModal } = useModal();
+    const { changeSetting } = useSettings();
+    const { user } = useUser();
+    const { fontIdToName } = useData();
+
+    if (!user) return <Navigate to="/login" />;
+
+    const [modalAnimation, setModalAnimation] = useState<boolean>(localStorage.getItem("DISABLE_MODAL_ANIMATION") ? false : true);
+
+    const navigate = useNavigate();
+
+    const friendRequestsButton = () => {
+        setLoading("Changing settings");
+        changeSetting({
+            key: "friendRequests",
+            value: user.settings.friendRequests === SettingFriendRequestEnum.ON ? SettingFriendRequestEnum.MUTUAL : user.settings.friendRequests === SettingFriendRequestEnum.MUTUAL ? SettingFriendRequestEnum.OFF : user.settings.friendRequests === SettingFriendRequestEnum.OFF ? SettingFriendRequestEnum.ON : SettingFriendRequestEnum.ON
+        })
+            .then(() => setLoading(false))
+            .catch(() => createModal(<Modal.ErrorModal>Failed to change settings.</Modal.ErrorModal>))
+            .finally(() => setLoading(false));
+    };
+
+    const onlyRareSoundsButton = () => {
+        setLoading("Changing settings");
+        changeSetting({
+            key: "onlyRareSounds",
+            value: !user.settings.onlyRareSounds
+        })
+            .then(() => setLoading(false))
+            .catch(() => createModal(<Modal.ErrorModal>Failed to change settings.</Modal.ErrorModal>))
+            .finally(() => setLoading(false));
+    };
+
+    const modalAnimationButton = () => {
+        if (localStorage.getItem("DISABLE_MODAL_ANIMATION")) {
+            localStorage.removeItem("DISABLE_MODAL_ANIMATION");
+            setModalAnimation(true);
+        } else {
+            localStorage.setItem("DISABLE_MODAL_ANIMATION", "true");
+            setModalAnimation(false);
+        }
+    };
+
+    const lowPerformanceModeButton = () => {
+        setLoading("Changing settings");
+
+        const newValue =
+            user.settings.lowPerformanceMode === null ? false : user.settings.lowPerformanceMode === false ? true : null;
+
+        changeSetting({
+            key: "lowPerformanceMode",
+            value: newValue
+        })
+            .then(() => setLoading(false))
+            .catch(() => createModal(<Modal.ErrorModal>Failed to change settings.</Modal.ErrorModal>))
+            .finally(() => setLoading(false));
+    };
+
+    return (
+        <div className={styles.container}>
+            <SettingsContainer header={{ icon: "fas fa-user", text: "Profile" }}>
+                <div><b>ID:</b> {user.id}</div>
+                <div><b>Username:</b> {user.username}</div>
+                <div style={{ display: "inline-flex" }}><b>Font: </b> <div style={{ fontFamily: fontIdToName(user.fontId), marginLeft: 7 }}>{fontIdToName(user.fontId)}</div></div>
+                <div><b>Joined:</b> {`${new Date(user.createdAt).toLocaleDateString()} ${new Date(user.createdAt).toLocaleTimeString()}`}</div>
+                {user.discord && <div><b>Discord:</b> {user.discord.username}</div>}
+
+                <div className={styles.settingsContainerDivider} style={{ margin: "10px 0" }} />
+
+                {!user.discord && <Button.ClearButton to={
+                    `https://discord.com/oauth2/authorize?client_id=${import.meta.env.VITE_DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${encodeURI(window.location.origin + window.location.pathname + "/link-discord")
+                    }&scope=identify`
+                }>Link Discord</Button.ClearButton>}
+                <Button.ClearButton onClick={() => createModal(<Modal.LogoutModal />)}>Logout</Button.ClearButton>
+            </SettingsContainer>
+
+            <SettingsContainer header={{ icon: "fas fa-wallet", text: "Billing" }}>
+                <PlanText>Basic</PlanText>
+
+                <UpgradeButton>Upgrade</UpgradeButton>
+
+                <div className={styles.settingsContainerDivider} style={{ margin: "15px 0" }} />
+
+                <div>
+                    <b>Payment Method:</b> {user.paymentMethods.length > 0 ? <>
+                        <i className="fas fa-credit-card" style={{ marginLeft: 5, marginRight: 3 }} /> {user.paymentMethods.find((method) => method.primary)?.cardBrand} {user.paymentMethods.find((method) => method.primary)?.lastFour}
+                    </> : "None"}
+                </div>
+                <div style={{ marginTop: 5 }}>
+                    {user.paymentMethods.length < 1 && <Button.ClearButton onClick={() => navigate("/settings/billing")}>Add Payment Method</Button.ClearButton>}
+                    {user.paymentMethods.length > 0 && <Button.ClearButton onClick={() => navigate("/settings/billing")}>Manage Payment Methods</Button.ClearButton>}
+                </div>
+            </SettingsContainer>
+
+            <SettingsContainer header={{ icon: "fas fa-lock", text: "Security" }}>
+                <Button.ClearButton onClick={() => createModal(<ChangePasswordModal />)}>Change Password</Button.ClearButton>
+                <Button.ClearButton onClick={() => createModal(user.settings.otpEnabled ? <DisableOTPModal /> : <EnableOTPModal />)}>{user.settings.otpEnabled ? "Disable" : "Enable"} 2FA / OTP</Button.ClearButton>
+                <Button.ClearButton onClick={() => createModal(<ManageSecurityKeysModal />)}>Add Security Key</Button.ClearButton>
+            </SettingsContainer>
+
+            <SettingsContainer header={{ icon: "fas fa-cog", text: "General" }}>
+                <Button.ClearButton onClick={() => createModal(<ChangeUsernameModal />)}>Change Username</Button.ClearButton>
+                <Button.ClearButton onClick={friendRequestsButton}>Friend Requests: {
+                    user.settings.friendRequests === SettingFriendRequestEnum.ON ? "On" : user.settings.friendRequests === SettingFriendRequestEnum.OFF ? "Off" : user.settings.friendRequests === SettingFriendRequestEnum.MUTUAL ? "Mutual" : "Unknown"
+                }</Button.ClearButton>
+
+                <Tooltip id="lowPerformanceMode" place="right">This will reduce some animations and visual effects to improve performance on lower-end devices.</Tooltip>
+                <Button.ClearButton data-tooltip-id="lowPerformanceMode" onClick={lowPerformanceModeButton}>Low Performance Mode: {
+                    user.settings.lowPerformanceMode === null ? "Auto" : user.settings.lowPerformanceMode === false ? "Off" : user.settings.lowPerformanceMode === true ? "On" : "Auto"
+                }</Button.ClearButton>
+
+            </SettingsContainer>
+
+            <SettingsContainer header={{ icon: "fas fa-palette", text: "Cosmetics" }}>
+                <Tooltip id="modalAnimation" place="right">This will disable the zoom in out animation on popups.</Tooltip>
+                <Button.ClearButton data-tooltip-id="modalAnimation" onClick={modalAnimationButton}>Modal Animation: {modalAnimation ? "On" : "Off"}</Button.ClearButton>
+
+                <Tooltip id="onlyRareSounds" place="right">This will disable sounds for common blooks such as epic and below.</Tooltip>
+                <Button.ClearButton data-tooltip-id="onlyRareSounds" onClick={onlyRareSoundsButton}>Only Rare Sounds: {user.settings.onlyRareSounds ? "On" : "Off"}</Button.ClearButton>
+                {/* <Button.ClearButton onClick={() => {
+                    if (document.getElementById("theme")) return;
+                    const style = document.createElement("style");
+                    style.id = "theme";
+                    style.innerHTML = `:root {
+                        --background-opacity: 0.0175;
+                        --background-color: #000000;
+                        --primary-color: #0b0b0b;
+                        --secondary-color: #1b1b1b;
+                        --accent-color: #ffffff;
+                    }`;
+                    document.body.appendChild(style);
+                }}>
+                    amoled theme (experimental)
+                </Button.ClearButton>
+                <Button.ClearButton onClick={() => {
+                    const style = document.getElementById("theme");
+                    if (style) style.remove();
+                }}>
+                    revert to default theme
+                </Button.ClearButton> */}
+
+
+            </SettingsContainer>
+
+            <SettingsContainer header={{ icon: "fas fa-info-circle", text: "Legal / Info" }}>
+                <Link to="/terms">Terms of Service</Link>
+                <Link to="/privacy">Privacy Policy</Link>
+                <Link to="/eula">End User License Agreement</Link>
+                <Link to="/rules">Rules</Link>
+            </SettingsContainer>
+        </div>
+    );
+}

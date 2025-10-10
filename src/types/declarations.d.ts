@@ -8,6 +8,7 @@ import { PrivateUser } from "@blacket/types";
 declare global {
     interface BlacketRoute {
         path: string,
+        aliases?: string[],
         component: JSX.Element,
         title: string,
         description: string,

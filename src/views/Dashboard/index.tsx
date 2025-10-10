@@ -1,10 +1,9 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Navigate } from "react-router-dom";
 import { useLoading } from "@stores/LoadingStore/index";
 import { useModal } from "@stores/ModalStore";
 import { useUser } from "@stores/UserStore/index";
 import { useCachedUser } from "@stores/CachedUserStore/index";
-import { useData } from "@stores/DataStore/index";
 import { useResource } from "@stores/ResourceStore/index";
 import { useAuctionHouse } from "@stores/AuctionHouseStore/index";
 import { useFriend } from "@stores/FriendStore/index";
@@ -17,24 +16,21 @@ import { useRevokeRequest } from "@controllers/friends/useRevokeRequest/index";
 import { useDeclineRequest } from "@controllers/friends/useDeclineRequest/index";
 import { useBlockFriend } from "@controllers/friends/useBlockFriend/index";
 import { useUnblockFriend } from "@controllers/friends/useUnblockFriend/index";
-import { Auction, Blook, ImageOrVideo, Username, InventoryBlook, InventoryItem, ItemContainer, Title, Button, Modal } from "@components/index";
-import { LevelContainer, LookupUserModal, SmallButton, SectionHeader, StatContainer, CosmeticsModal, DailyRewardsModal, StatButton } from "./components";
+import { Auction, Blook, ImageOrVideo, Username, ItemContainer, Title, Button, Modal } from "@components/index";
+import { LevelContainer, LookupUserModal, SectionHeader, StatContainer, CosmeticsModal, DailyRewardsModal, StatButton, FriendsContainer, MobileFriendsModal } from "./components";
 import styles from "./dashboard.module.scss";
 
-import { AutoSizer, List } from "react-virtualized";
-
 import { AuctionsAuctionEntity, PrivateUser, PublicUser } from "@blacket/types";
-import { CosmeticsModalCategory, FriendsViewMode } from "./dashboard.d";
+import { CosmeticsModalCategory } from "./dashboard.d";
 
 export default function Dashboard() {
     const { setLoading } = useLoading();
     const { createModal } = useModal();
-    const { user, getUserAvatarPath, getUserBannerPath, getBlookAmount, isAvatarBig } = useUser();
+    const { user, getUserAvatarPath, getUserBannerPath, isAvatarBig, isLowPerformance } = useUser();
     const { cachedUsers, addCachedUserWithData } = useCachedUser();
-    const { blooks, packs, items, titleIdToText } = useData();
     const { resourceIdToPath } = useResource();
     const { setSearch } = useAuctionHouse();
-    const { getAllFriends, getFriendRequests, getSendingRequests, isFriendsWith, isRequesting, isRequestedBy, isBlocking, friends, friendedBy, blocked } = useFriend();
+    const { isFriendsWith, isRequesting, isRequestedBy, isBlocking } = useFriend();
 
     if (!user) return <Navigate to="/login" />;
 
@@ -55,63 +51,7 @@ export default function Dashboard() {
 
     const [viewingUser, setViewingUser] = useState<PublicUser | PrivateUser>(user);
     const [viewingUserAuctions, setViewingUserAuctions] = useState<AuctionsAuctionEntity[]>([]);
-    const [inventoryLoaded, setInventoryLoaded] = useState<boolean>(true);
-
-    const [allFriends, setAllFriends] = useState<PublicUser[]>([]);
-    const [friendRequests, setFriendRequests] = useState<PublicUser[]>([]);
-    const [sendingRequests, setSendingRequests] = useState<PublicUser[]>([]);
-    const [friendsViewMode, setFriendsViewMode] = useState<FriendsViewMode>(FriendsViewMode.ALL);
-
-    const renderFriends = (friends: PublicUser[]) => {
-        return <AutoSizer>
-            {({ height, width }) => (
-                <List
-                    width={width}
-                    height={height}
-                    rowHeight={50}
-                    rowRenderer={({ index, key, style }) => {
-                        const friend = friends[index];
-
-                        return (
-                            <div
-                                className={styles.friend}
-                                key={key}
-                                style={style}
-                                onClick={() => {
-                                    viewUser(friend.username)
-                                        .catch(() => { });
-                                }}
-                            >
-                                <div className={styles.friendAvatarContainer}>
-                                    <Blook
-                                        className={styles.friendAvatar}
-                                        src={getUserAvatarPath(friend)}
-                                        alt="Friend Avatar"
-                                        draggable={false}
-                                        custom={friend.customAvatar ? true : false}
-                                        shiny={friend.avatar?.shiny}
-                                        data-big={isAvatarBig(friend)}
-                                    />
-                                </div>
-                                <div className={styles.friendBannerAndInfo}>
-                                    <div className={styles.friendBanner}>
-                                        <img
-                                            src={getUserBannerPath(friend)}
-                                            alt="Friend Banner"
-                                            draggable={false}
-                                        />
-                                    </div>
-                                    <Username className={styles.friendUsername} user={friend} />
-                                    <Title title={friend.titleId} className={styles.friendTitle} />
-                                </div>
-                            </div>
-                        );
-                    }}
-                    rowCount={friends.length}
-                />
-            )}
-        </AutoSizer>;
-    };
+    const [inventoryLoaded, setInventoryLoaded] = useState<boolean>(isLowPerformance() ? false : true);
 
     const viewUser = (username: string) => new Promise<void>((resolve, reject) => {
         const cachedUser = cachedUsers.find((user) => user.username.toLowerCase() === username.toLowerCase() || user.id === username);
@@ -163,7 +103,7 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
-        // setInventoryLoaded(false);
+        if (isLowPerformance()) setInventoryLoaded(false);
 
         if (!viewingUser) return;
         if (searchParams.get("name") && viewingUser.id === user.id) return;
@@ -180,21 +120,10 @@ export default function Dashboard() {
         setViewingUser(user);
     }, [user]);
 
-    // friends
-    useEffect(() => {
-        setAllFriends(getAllFriends());
-    }, [user, getAllFriends, friends, friendedBy, blocked]);
-
-    useEffect(() => {
-        setFriendRequests(getFriendRequests());
-    }, [user, getFriendRequests, friends, friendedBy, blocked]);
-
-    useEffect(() => {
-        setSendingRequests(getSendingRequests());
-    }, [user, getSendingRequests, friends, friendedBy, blocked]);
-
     const claimableDate = new Date();
     claimableDate.setUTCHours(0, 0, 0, 0);
+
+    const isMobile = window.innerWidth <= 768;
 
     return (
         <div className={styles.parentHolder}>
@@ -251,6 +180,13 @@ export default function Dashboard() {
                             Lookup User
                         </StatButton>
 
+                        {isMobile && <StatButton
+                            icon="fas fa-people"
+                            onClick={() => createModal(<MobileFriendsModal onFriendClick={(friend) => viewUser(friend.username)} />)}
+                        >
+                            Friends
+                        </StatButton>}
+
                         {viewingUser.id === user.id && new Date(user.lastClaimed) < claimableDate && <StatButton icon="fas fa-star" onClick={() => {
                             setLoading(true);
 
@@ -259,14 +195,13 @@ export default function Dashboard() {
                                 .finally(() => setLoading(false));
                         }}>Daily Rewards</StatButton>}
 
-
                         <StatButton icon="fas fa-cart-shopping" onClick={() => {
                             navigate("/store");
                         }}>Store</StatButton>
 
                         {viewingUser.id !== user.id && <>
                             {
-                                !isFriendsWith(viewingUser.id) && !isRequesting(viewingUser.id) && !isRequestedBy(viewingUser.id)
+                                !isFriendsWith(viewingUser.id) && !isRequesting(viewingUser.id) && !isRequestedBy(viewingUser.id) && !isBlocking(viewingUser.id)
                                 && <StatButton icon="fas fa-user-plus" onClick={() => {
                                     setLoading(true);
 
@@ -276,7 +211,8 @@ export default function Dashboard() {
                                 }}>Add Friend</StatButton>
                             }
 
-                            {isFriendsWith(viewingUser.id)
+                            {
+                                isFriendsWith(viewingUser.id)
                                 && <StatButton icon="fas fa-user-xmark" onClick={() => {
                                     setLoading(true);
 
@@ -286,46 +222,49 @@ export default function Dashboard() {
                                 }}>Remove Friend</StatButton>
                             }
 
-                            {isRequesting(viewingUser.id) && <StatButton icon="fas fa-user-xmark" onClick={() => {
-                                setLoading(true);
-
-                                revokeRequest(viewingUser.id)
-                                    .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
-                                    .finally(() => setLoading(false));
-                            }}>Revoke Request</StatButton>}
-
-                            {isRequestedBy(viewingUser.id) && <>
-                                <StatButton icon="fas fa-user-plus" onClick={() => {
+                            {
+                                isRequesting(viewingUser.id) && <StatButton icon="fas fa-user-xmark" onClick={() => {
                                     setLoading(true);
 
-                                    addFriend(viewingUser.id)
+                                    revokeRequest(viewingUser.id)
                                         .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
                                         .finally(() => setLoading(false));
-                                }}>Accept Request</StatButton>
+                                }}>Revoke Request</StatButton>}
 
-                                <StatButton icon="fas fa-user-xmark" onClick={() => {
+                            {
+                                isRequestedBy(viewingUser.id) && <>
+                                    <StatButton icon="fas fa-user-plus" onClick={() => {
+                                        setLoading(true);
+
+                                        addFriend(viewingUser.id)
+                                            .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
+                                            .finally(() => setLoading(false));
+                                    }}>Accept Request</StatButton>
+
+                                    <StatButton icon="fas fa-user-xmark" onClick={() => {
+                                        setLoading(true);
+
+                                        declineRequest(viewingUser.id)
+                                            .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
+                                            .finally(() => setLoading(false));
+                                    }}>Decline Request</StatButton>
+                                </>}
+
+                            {
+                                !isBlocking(viewingUser.id) ? <StatButton icon="fas fa-ban" onClick={() => {
                                     setLoading(true);
 
-                                    declineRequest(viewingUser.id)
+                                    blockFriend(viewingUser.id)
                                         .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
                                         .finally(() => setLoading(false));
-                                }}>Decline Request</StatButton>
-                            </>}
+                                }}>Block User</StatButton>
+                                    : <StatButton icon="fas fa-handshake" onClick={() => {
+                                        setLoading(true);
 
-                            {!isBlocking(viewingUser.id) ? <StatButton icon="fas fa-ban" onClick={() => {
-                                setLoading(true);
-
-                                blockFriend(viewingUser.id)
-                                    .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
-                                    .finally(() => setLoading(false));
-                            }}>Block User</StatButton>
-                                : <StatButton icon="fas fa-smile" onClick={() => {
-                                    setLoading(true);
-
-                                    unblockFriend(viewingUser.id)
-                                        .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
-                                        .finally(() => setLoading(false));
-                                }}>Unblock User</StatButton>
+                                        unblockFriend(viewingUser.id)
+                                            .catch((err) => createModal(<Modal.ErrorModal>{err?.data?.message || "Something went wrong."}</Modal.ErrorModal>))
+                                            .finally(() => setLoading(false));
+                                    }}>Unblock User</StatButton>
                             }
                         </>}
 
@@ -376,57 +315,11 @@ export default function Dashboard() {
             </div>
 
             <div className={`${styles.section} ${styles.friendsSection}`}>
-                <div className={styles.friendsContainer}>
-                    <div className={styles.friendsTop}>
-                        <p className={styles.friendsHeader}>
-                            Friends
-                        </p>
-
-                        <p className={styles.friendsMode}>
-                            {friendsViewMode === FriendsViewMode.ALL
-                                ? "All Friends"
-                                : friendsViewMode === FriendsViewMode.REQUESTS
-                                    ? "Incoming Requests"
-                                    : "Outgoing Requests"
-                            }
-                        </p>
-
-                        <div className={styles.friendsViewModeButtons}>
-                            {friendsViewMode !== FriendsViewMode.REQUESTS && <StatButton
-                                icon="fas fa-arrow-up"
-                                onClick={() => setFriendsViewMode(FriendsViewMode.REQUESTS)}
-                            >
-                                Incoming
-
-                                <div className={styles.requestCount} style={{ display: friendRequests.length > 0 ? "flex" : "none" }}><div>{friendRequests.length}</div></div>
-                            </StatButton>}
-
-                            {friendsViewMode !== FriendsViewMode.SENDING && <StatButton
-                                icon="fas fa-arrow-down"
-                                onClick={() => setFriendsViewMode(FriendsViewMode.SENDING)}
-                            >
-                                Outgoing
-                            </StatButton>}
-
-                            {friendsViewMode !== FriendsViewMode.ALL && <StatButton
-                                icon="fas fa-user"
-                                onClick={() => setFriendsViewMode(FriendsViewMode.ALL)}
-                            >
-                                All
-                            </StatButton>}
-                        </div>
-                    </div>
-
-                    <div className={styles.holdFriends}>
-                        {(friendsViewMode === FriendsViewMode.ALL && allFriends.length === 0) && <>You don't have any friends. Why don't you make some?</>}
-
-                        <div className={styles.holdFriendsList}>
-                            {friendsViewMode === FriendsViewMode.ALL && renderFriends(allFriends)}
-                            {friendsViewMode === FriendsViewMode.REQUESTS && renderFriends(friendRequests)}
-                            {friendsViewMode === FriendsViewMode.SENDING && renderFriends(sendingRequests)}
-                        </div>
-                    </div>
-                </div>
+                <FriendsContainer
+                    onFriendClick={async (friend) => {
+                        viewUser(friend.username).catch(() => { });
+                    }}
+                />
             </div>
 
             <div className={`${styles.section} ${styles.auctionSection}`}>

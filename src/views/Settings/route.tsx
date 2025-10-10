@@ -2,6 +2,12 @@ import Settings from "./index";
 
 export default {
     path: "/settings",
+    aliases: [
+        "/settings/profile",
+        "/settings/security",
+        "/settings/cosmetics",
+        "/settings/legal"
+    ],
     component: <Settings />,
     title: `Settings | ${import.meta.env.VITE_INFORMATION_NAME}`,
     description: "Change the settings of your account.",

@@ -1,5 +1,5 @@
-import { HTMLAttributes } from "react";
-import { Blook } from "@blacket/types";
+import { HTMLAttributes, ReactNode } from "react";
+import { Blook, PublicUser } from "@blacket/types";
 
 export interface StatButtonProps extends HTMLAttributes<HTMLDivElement> {
     icon: string;
@@ -58,4 +58,13 @@ export enum FriendsViewMode {
     ALL,
     REQUESTS,
     SENDING
+}
+
+export interface FriendsContainerProps {
+    isMobile?: boolean;
+    onFriendClick?: (user: PublicUser) => Promise<void>;
+}
+
+export interface MobileFriendsModalProps {
+    onFriendClick?: (user: PublicUser) => Promise<void>;
 }

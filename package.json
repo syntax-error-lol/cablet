@@ -10,7 +10,6 @@
     "dependencies": {
         "@stripe/react-stripe-js": "^2.9.0",
         "@stripe/stripe-js": "^4.10.0",
-        "@types/prismjs": "^1.26.5",
         "@types/qrcode": "^1.5.5",
         "@types/react-helmet-async": "^1.0.3",
         "@types/react-tooltip": "^4.2.4",

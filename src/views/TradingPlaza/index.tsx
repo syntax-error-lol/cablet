@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { gainToDb } from "tone";
 import { BrenderCanvas, BrenderCanvasRef, BrenderEntity, isColliding, isOnScreen, PlayerEntity, urlToImage } from "@brender/index";
 import { useUser } from "@stores/UserStore/index";
-import { useSocket } from "@stores/SocketStore/index";
+import { useSocket, useSocketLatency } from "@stores/SocketStore/index";
 import { useData } from "@stores/DataStore/index";
 import { useCachedUser } from "@stores/CachedUserStore/index";
 import { useSound } from "@stores/SoundStore/index";
@@ -74,7 +74,8 @@ const getTimeColor = (m: number): RGBA => {
 
 export default function TradingPlaza() {
     const { user, getUserAvatarPath, isAvatarBig } = useUser();
-    const { socket, connected, latency } = useSocket();
+    const { socket, connected } = useSocket();
+    const { latency } = useSocketLatency();
     const { fontIdToName } = useData();
     const { addCachedUser } = useCachedUser();
     const { playSound, defineSounds, stopSound, setVolume } = useSound();
@@ -551,7 +552,7 @@ export default function TradingPlaza() {
                 style={{
                     position: "absolute",
                     top: 10,
-                    right: 10,
+                    right: 100,
                     padding: 10,
                     zIndex: 10,
                     background: "rgba(0,0,0,0.35)",

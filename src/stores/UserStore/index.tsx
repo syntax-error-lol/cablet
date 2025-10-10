@@ -8,6 +8,27 @@ import { useCachedUser } from "@stores/CachedUserStore/index";
 
 import { UserStore } from "./userStore.d";
 
+let _lowPerformanceCache: boolean | null = null;
+
+function isLowPerformanceDevice() {
+    const cores = navigator.hardwareConcurrency || 2;
+    const memory = (navigator as any).deviceMemory || 2;
+
+    const start = performance.now();
+
+    for (let i = 0; i < 1e6; i++) Math.sqrt(i);
+
+    const duration = performance.now() - start;
+
+    return (
+        cores < 4 ||
+        memory < 4 ||
+        duration > 80
+    );
+}
+
+const isChromebook = /\bCrOS\b/.test(navigator.userAgent);
+
 export const useUserStore = create<UserStore>((set, get) => {
     return {
         user: null,
@@ -38,6 +59,8 @@ export const useUserStore = create<UserStore>((set, get) => {
 
         isAvatarBig: () => false,
 
+        isLowPerformance: () => false,
+
         getBlookAmount: (blookId: number, shiny: boolean, usr?: PrivateUser) => {
             const user = usr || get().user;
             if (!user) return 0;
@@ -56,7 +79,7 @@ export function useUser() {
     const { addCachedUserWithData } = useCachedUser();
 
     const location = useLocation();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     useEffect(() => {
         if (user) {
@@ -103,12 +126,27 @@ export function useUser() {
         return false;
     };
 
+    const isLowPerformance = () => {
+        if (user?.settings.lowPerformanceMode) return true;
+        if (user?.settings.lowPerformanceMode === false) return false;
+        else {
+            if (_lowPerformanceCache !== null) return _lowPerformanceCache;
+
+            const low = isLowPerformanceDevice() || isChromebook;
+
+            if (_lowPerformanceCache === null) _lowPerformanceCache = low;
+
+            return _lowPerformanceCache;
+        }
+    };
+
     return {
         user,
         setUser,
         getBlookAmount,
         getUserAvatarPath,
         getUserBannerPath,
-        isAvatarBig
+        isAvatarBig,
+        isLowPerformance
     };
 }
