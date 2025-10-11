@@ -4,7 +4,7 @@ export interface NavbarItem {
     element: IntrinsicAttributes;
     icon: string;
     text: string;
-    element: Element | (() => JSX.Element);
+    element?: Element | (() => JSX.Element);
     path: string;
 }
 

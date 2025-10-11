@@ -3,7 +3,8 @@ import Settings from "./index";
 export default {
     path: "/settings",
     aliases: [
-        "/settings/profile",
+        "/settings/account",
+        "/settings/social",
         "/settings/security",
         "/settings/cosmetics",
         "/settings/legal"

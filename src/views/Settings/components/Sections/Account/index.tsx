@@ -11,7 +11,7 @@ import { PlanText, UpgradeButton, ChangeUsernameModal } from "./components/index
 
 import { SettingFriendRequestEnum } from "@blacket/types";
 
-export default function Profile() {
+export default function Account() {
     const { user } = useUser();
     const { fontIdToName } = useData();
     const { createModal } = useModal();
@@ -50,7 +50,7 @@ export default function Profile() {
     };
 
     return <>
-        <SettingsContainer header={{ icon: "fas fa-user", text: "Profile" }}>
+        <SettingsContainer header={{ icon: "fas fa-user", text: "Account" }}>
             <div><b>ID:</b> {user.id}</div>
             <div><b>Username:</b> {user.username}</div>
             <div style={{ display: "inline-flex" }}>
@@ -63,6 +63,11 @@ export default function Profile() {
             {user.discord && <div><b>Discord:</b> {user.discord.username}</div>}
 
             <Divider margin={10} />
+
+            <Button.ClearButton onClick={() => createModal(<ChangeUsernameModal />)}>Change Username</Button.ClearButton>
+            <Button.ClearButton onClick={friendRequestsButton}>Friend Requests: {
+                user.settings.friendRequests === SettingFriendRequestEnum.ON ? "On" : user.settings.friendRequests === SettingFriendRequestEnum.OFF ? "Off" : user.settings.friendRequests === SettingFriendRequestEnum.MUTUAL ? "Mutual" : "Unknown"
+            }</Button.ClearButton>
 
             <Button.ClearButton onClick={() => createModal(<Modal.LogoutModal />)}>
                 Logout
@@ -88,11 +93,6 @@ export default function Profile() {
         </SettingsContainer>
 
         <SettingsContainer header={{ icon: "fas fa-cog", text: "General" }}>
-            <Button.ClearButton onClick={() => createModal(<ChangeUsernameModal />)}>Change Username</Button.ClearButton>
-            <Button.ClearButton onClick={friendRequestsButton}>Friend Requests: {
-                user.settings.friendRequests === SettingFriendRequestEnum.ON ? "On" : user.settings.friendRequests === SettingFriendRequestEnum.OFF ? "Off" : user.settings.friendRequests === SettingFriendRequestEnum.MUTUAL ? "Mutual" : "Unknown"
-            }</Button.ClearButton>
-
             <Tooltip id="lowPerformanceMode" place="right">This will reduce some animations and visual effects to improve performance on lower-end devices.</Tooltip>
             <Button.ClearButton data-tooltip-id="lowPerformanceMode" onClick={lowPerformanceModeButton}>Low Performance Mode: {
                 user.settings.lowPerformanceMode === null ? "Auto" : user.settings.lowPerformanceMode === false ? "Off" : user.settings.lowPerformanceMode === true ? "On" : "Auto"

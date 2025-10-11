@@ -16,15 +16,20 @@ export default function Settings() {
     const NAVBAR: NavbarItem[] = [
         {
             icon: "fas fa-user",
-            text: "Profile",
-            path: "/settings/profile",
-            element: Section.Profile
+            text: "Account",
+            path: "/settings/account",
+            element: Section.Account
+        },
+        {
+            icon: "fas fa-user-friends",
+            text: "Social",
+            path: "/settings/social",
+            element: Section.Social
         },
         {
             icon: "fas fa-wallet",
             text: "Billing",
-            path: "/settings/billing",
-            element: Section.Profile
+            path: "/settings/billing"
         },
         {
             icon: "fas fa-shield-alt",
