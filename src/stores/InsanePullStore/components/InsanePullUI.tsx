@@ -40,7 +40,7 @@ export default function InsanePullUI() {
 
         setTimeout(() => {
             flash.style.backgroundColor = "black";
-        }, 300);
+        }, 250);
 
         const handleCanPlayThrough = () => {
             setTimeout(() => {
@@ -48,7 +48,7 @@ export default function InsanePullUI() {
 
                 vid.style.opacity = String(1);
                 vid.play();
-            }, Math.floor(Math.random() * (7000 - 4000 + 1)) + 4000);
+            }, 4000);
 
             vid.removeEventListener("canplaythrough", handleCanPlayThrough);
         };

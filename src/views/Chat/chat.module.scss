@@ -66,6 +66,7 @@
     list-style: none;
     padding-inline: 10px 65px;
     line-height: 30px;
+    transition: background-color 0s ease;
 
     @media (min-width: 850px) {
         &:hover {
@@ -77,6 +78,11 @@
         font-size: 1.5rem;
         padding-inline: unset;
         line-height: 35px;
+    }
+
+    .messageSmallTimestamp {
+        opacity: 0;
+        transition: opacity 0s ease;
     }
 
     &:hover .messageSmallTimestamp {

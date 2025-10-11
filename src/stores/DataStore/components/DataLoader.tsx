@@ -1,12 +1,14 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useData } from "@stores/DataStore/index";
 import { useResource } from "@stores/ResourceStore/index";
-import { useUser } from "@stores/UserStore";
+import { useUser } from "@stores/UserStore/index";
+import { useFriend } from "@stores/FriendStore/index";
 import Loading from "../../../views/Loading";
 import styles from "@stores/DataStore/dataStore.module.scss";
 
 export default function DataLoader({ children }: { children: ReactNode }) {
     const { setUser } = useUser();
+    const { setFriends, setFriendedBy, setBlocked } = useFriend();
     const { setResources, resourceIdToPath } = useResource();
     const {
         setBadges, setBanners, setBlooks, setEmojis, setFonts, setItems, setItemShop,
@@ -17,7 +19,7 @@ export default function DataLoader({ children }: { children: ReactNode }) {
     const [error, setError] = useState<any>(null);
     const [completed, setCompleted] = useState<number>(0);
 
-    const max = 12 + (localStorage.getItem("token") ? 1 : 0);
+    const max = 12 + (localStorage.getItem("token") ? 2 : 0);
 
     useEffect(() => {
         if (completed >= max) return setLoading(false);
@@ -47,14 +49,22 @@ export default function DataLoader({ children }: { children: ReactNode }) {
             ["spinny-wheels", setSpinnyWheels]
         ] as const;
 
-        endpoints.forEach(([key, setter]) => {
+        // endpoints.forEach(([key, setter]) => {
+        //     window.fetch2.get(`/api/data/${key}`)
+        //         .then((res) => {
+        //             setter(res.data);
+        //             setCompleted((c) => c + 1);
+        //         })
+        //         .catch(setError);
+        // });
+        Promise.all(endpoints.map(([key, setter]) =>
             window.fetch2.get(`/api/data/${key}`)
                 .then((res) => {
                     setter(res.data);
                     setCompleted((c) => c + 1);
                 })
-                .catch(setError);
-        });
+                .catch(setError)
+        ));
 
         window.fetch2.get("/api/data/fonts")
             .then(async (res) => {
@@ -68,16 +78,46 @@ export default function DataLoader({ children }: { children: ReactNode }) {
             });
 
         if (localStorage.getItem("token")) {
-            window.fetch2.get("/api/users/me")
-                .then((res) => {
-                    setUser(res.data);
-                    setCompleted((c) => c + 1);
-                })
-                .catch((res) => {
-                    setError(res);
-                    localStorage.removeItem("token");
-                    setTimeout(() => setLoading(false), 2000);
-                });
+            // window.fetch2.get("/api/users/me")
+            //     .then((res) => {
+            //         setUser(res.data);
+            //         setCompleted((c) => c + 1);
+            //     })
+            //     .catch((res) => {
+            //         setError(res);
+            //         localStorage.removeItem("token");
+            //         setTimeout(() => setLoading(false), 2000);
+            //     });
+
+            const endpoints = [
+                ["users/me", setUser],
+                ["friends", [setFriends, setFriendedBy, setBlocked]]
+            ];
+
+            Promise.all(endpoints.map(([endpoint, setters]) =>
+                window.fetch2.get(`/api/${endpoint}`)
+                    .then((res) => {
+                        if (Array.isArray(setters)) {
+                            const [setA, setB, setC] = setters as [
+                                React.Dispatch<React.SetStateAction<any[]>>,
+                                React.Dispatch<React.SetStateAction<any[]>>,
+                                React.Dispatch<React.SetStateAction<any[]> | undefined>
+                            ];
+                            setA(res.data.friends);
+                            setB(res.data.friendedBy);
+                            setC(res.data.blocked);
+                        } else {
+                            (setters as React.Dispatch<React.SetStateAction<any>>)(res.data);
+                        }
+
+                        setCompleted((c) => c + 1);
+                    })
+                    .catch((res) => {
+                        setError(res);
+                        localStorage.removeItem("token");
+                        setTimeout(() => setLoading(false), 2000);
+                    })
+            ));
         } else {
             setUser(null);
             setCompleted((c) => c + 1);
@@ -86,7 +126,7 @@ export default function DataLoader({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (completed >= max) setLoading(false);
-    }, [ completed]);
+    }, [completed]);
 
     if (loading) return <Loading error={error}>
         <div className={styles.progressBarContainer}>

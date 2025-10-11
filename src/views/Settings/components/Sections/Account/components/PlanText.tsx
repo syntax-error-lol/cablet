@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import styles from "../settings.module.scss";
+import styles from "../account.module.scss";
 
 export default function PlanText({ children }: { children: ReactNode }) {
     return (

@@ -1,89 +1,147 @@
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: bottom;
+    filter: brightness(0.9);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.water {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+    filter: brightness(0.9);
+    background-size: 5vh 5vh;
+    background-repeat: repeat;
+    z-index: -2;
+    pointer-events: none;
+}
+
 .container {
-    background-color: var(--primary-color);
-    border-radius: 7px;
-    box-shadow: inset 0 -7px rgba(0, 0, 0, .2), 0 0 4px rgba(0, 0, 0, .15);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.leftSide {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @media (max-width: 1000px) {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.inside {
+    width: fit-content;
+    min-width: 60%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    left: 50%;
-    max-width: 420px;
-    padding-bottom: 7px;
-    position: absolute;
-    text-align: center;
-    top: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    width: 90%
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: .7vh;
+    padding: 2vh 4vh 2.7vh 4vh;
+
+    @media (max-width: 600px) {
+        width: 95%;
+        padding: 2vh 2vh 2.7vh 2vh;
+    }
 }
 
-.containerHeader {
-    color: var(--accent-color);
+.glass {
+    overflow: hidden;
+    filter: drop-shadow(-8px -10px 46px #0000005f);
+    backdrop-filter: brightness(1.1) blur(2px) url(#displacementFilter);
+    position: relative;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        box-shadow: inset 6px 6px 0px -6px rgba(255, 255, 255, 0.4),
+            inset 0 0 8px 1px rgba(255, 255, 255, 0.4);
+
+        pointer-events: none;
+    }
+}
+
+.header {
+    font-size: 60px;
     font-family: "Titan One", sans-serif;
-    font-size: 55px;
-    margin: 10px 20px 20px;
-    text-align: center;
-    font-size: 50px;
-    line-height: 54px
+    margin-bottom: 20px;
 }
 
-.button {
-    font-family: "Nunito", sans-serif;
-    font-size: 22px;
-    margin: 5px auto 20px;
-    padding: 5px 20px;
-}
+.input {
+    border: 2px solid rgba(255, 255, 255, 0.2);
 
+    &:focus-within {
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    &>input {
+        background-color: transparent;
+
+        &::-webkit-input-placeholder {
+            color: var(--accent-color);
+            opacity: .5;
+        }
+    }
+}
 
 .agreeHolder {
-    align-items: center;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
-    margin: auto auto 5px;
-    width: 330px;
+    width: 400px;
+
+    @media (max-width: 600px) {
+        width: 100%;
+    }
 }
 
 .agreeText {
     color: var(--accent-color);
-    font-family: "Nunito", sans-serif;
-    font-size: 15px;
     line-height: 16px;
-    margin-left: 5px;
+    margin-left: .5vh;
     text-align: left;
 }
 
-.checkBox {
-    align-items: center;
-    border: 2px solid;
-    border-color: var(--background-color);
-    border-radius: 7px;
-    color: var(--accent-color);
-    cursor: pointer;
+.rightSide {
+    width: 50%;
     display: flex;
-    font-size: 16px;
-    height: 24px;
     justify-content: center;
-    min-width: 24px;
-    outline: none;
-    -webkit-user-select: none;
+    align-items: center;
+    flex-direction: column;
+
+    @media (max-width: 1000px) {
+        display: none;
+    }
+}
+
+.rightImage {
+    width: 20vh;
+    height: 20vh;
     user-select: none;
-    width: 24px;
-    transition: .2s;
+    object-fit: contain;
 }
 
-.checkBox:hover {
-    border-color: var(--secondary-color);
-}
-
-.checkYes {
-    color: var(--accent-color);
-}
-
-.checkNo {
-    color: var(--primary-color);
-}
-
-.checkIcon {
+.rightText {
+    font-size: 3vh;
+    margin-top: 2vh;
     text-align: center;
-    width: 16px
+    font-weight: 700;
 }

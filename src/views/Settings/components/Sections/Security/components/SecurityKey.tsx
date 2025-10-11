@@ -1,6 +1,6 @@
-import styles from "../settings.module.scss";
+import styles from "../security.module.scss";
 
-import { SecurityKeyProps } from "../settings.d";
+import { SecurityKeyProps } from "../security.d";
 
 export default function SecurityKey({ name, createdAt, onRemove }: SecurityKeyProps) {
     return (

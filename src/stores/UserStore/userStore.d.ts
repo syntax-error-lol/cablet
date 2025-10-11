@@ -6,5 +6,6 @@ export interface UserStore {
     getUserAvatarPath: (user?: PrivateUser | null) => string;
     getUserBannerPath: (user?: PrivateUser | null) => string;
     isAvatarBig: (user?: PrivateUser | null) => boolean;
+    isLowPerformance: () => boolean;
     getBlookAmount: (blookId: number, shiny: boolean, user?: PrivateUser) => number;
 }

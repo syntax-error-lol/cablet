@@ -1,5 +1,5 @@
-import { LoadingWrapper } from "./LoadingWrapper";
+import { LoadingUI } from "./LoadingUI";
 
 export {
-    LoadingWrapper
+    LoadingUI
 };

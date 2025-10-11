@@ -1,12 +1,23 @@
-import { useUser } from "@stores/UserStore";
-import { ExperienceBalance, CrystalBalance, TokenBalance, UserDropdown, DiamondBalance } from "./components";
+import { useEffect, memo, useMemo } from "react";
+import { useUser } from "@stores/UserStore/index";
+import { ExperienceBalance, CrystalBalance, TokenBalance, UserDropdown, DiamondBalance } from "./components/index";
 import styles from "./topRight.module.scss";
 
 import { TopRightProps } from "./topRight.d";
-import { useEffect } from "react";
 
-export default function TopRight({ content, desktopOnly = false }: TopRightProps) {
+const MemoizedExperienceBalance = memo(ExperienceBalance);
+const MemoizedCrystalBalance = memo(CrystalBalance);
+const MemoizedDiamondBalance = memo(DiamondBalance);
+const MemoizedTokenBalance = memo(TokenBalance);
+const MemoizedUserDropdown = memo(UserDropdown);
+
+export default memo(function TopRight({ content, desktopOnly = false }: TopRightProps) {
     const { user } = useUser();
+
+    const showExperience = useMemo(() => content.includes("experience"), [content]);
+    const showCrystals = useMemo(() => content.includes("crystals"), [content]);
+    const showDiamonds = useMemo(() => content.includes("diamonds"), [content]);
+    const showTokens = useMemo(() => content.includes("tokens"), [content]);
 
     useEffect(() => {
         document.body.setAttribute("has-top-right", "true");
@@ -18,14 +29,19 @@ export default function TopRight({ content, desktopOnly = false }: TopRightProps
 
     if (!user) return null;
 
-    if (user) return (
+    return (
         <div className={styles.container} data-desktop-only={desktopOnly}>
-            {content.includes("experience") && <ExperienceBalance user={user} />}
-            {content.includes("crystals") && <CrystalBalance user={user} />}
-            {content.includes("diamonds") && <DiamondBalance user={user} />}
-            {content.includes("tokens") && <TokenBalance user={user} />}
+            {showExperience && <MemoizedExperienceBalance user={user} />}
+            {showCrystals && <MemoizedCrystalBalance user={user} />}
+            {showDiamonds && <MemoizedDiamondBalance user={user} />}
+            {showTokens && <MemoizedTokenBalance user={user} />}
 
-            {user && <UserDropdown user={user} />}
+            <MemoizedUserDropdown user={user} />
         </div>
     );
-}
+}, (prevProps, nextProps) => {
+    return (
+        prevProps.content === nextProps.content &&
+        prevProps.desktopOnly === nextProps.desktopOnly
+    );
+});

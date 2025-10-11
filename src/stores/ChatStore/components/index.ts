@@ -1,5 +1,5 @@
-import ChatWrapper from "./ChatWrapper";
+import ChatDefiner from "./ChatDefiner";
 
 export {
-    ChatWrapper
+    ChatDefiner
 };

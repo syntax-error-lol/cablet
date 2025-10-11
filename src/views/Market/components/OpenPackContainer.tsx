@@ -132,7 +132,7 @@ export default function OpenPackContainer({ opening, image, video, animationType
         let last = performance.now();
         let shakePhase = 0;
 
-        const growDuration = isMythical ? 9000 : 5000;
+        const growDuration = isMythical ? 8800 : 5000;
         const maxScale = isMythical ? 4 : 2;
         const shineStart = growDuration - 3000;
 
@@ -146,7 +146,7 @@ export default function OpenPackContainer({ opening, image, video, animationType
             const t = Math.min(elapsed / growDuration, 1);
             scale = 1 + t * (maxScale - 1);
 
-            const shakeSpeed = isMythical ? 0.01 : 0.02;
+            const shakeSpeed = isMythical ? 0.015 : 0.02;
             shakePhase += shakeSpeed * dt;
 
             const shakeX = Math.sin(shakePhase) * 6;

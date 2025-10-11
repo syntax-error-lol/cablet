@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
+import { useUser } from "@stores/UserStore/index";
 import styles from "./blook.module.scss";
 
 import { BlookProps } from "./blook.d";
 
-const ERROR_IMAGE = window.constructCDNUrl("/content/blooks/Error.png");
+const ERROR_IMAGE = window.constructCDNUrl("/content/icons/error.png");
 const _cache = new Map<string, string>();
 
 export default function Blook({ custom = false, shiny = false, big = false, src, alt, draggable, className, ...props }: BlookProps) {
     const [image, setImage] = useState<string | null>(null);
+    const { isLowPerformance } = useUser();
 
     useEffect(() => {
         if (_cache.has(src)) {
@@ -38,7 +40,7 @@ export default function Blook({ custom = false, shiny = false, big = false, src,
             <div
                 className={`${className ? `${className} ` : ""}${styles.blook}`}
                 style={{
-                    filter: shiny ? "drop-shadow(0px 0px 2px #fff)" : undefined,
+                    filter: shiny ? "drop-shadow(0px 0px 4px #fff)" : undefined,
                     transform: big ? "scale(1.4)" : undefined,
                     marginLeft: big ? "15px" : undefined,
                     marginRight: big ? "15px" : undefined,
@@ -53,7 +55,7 @@ export default function Blook({ custom = false, shiny = false, big = false, src,
                 </div>}
 
                 {image && <>
-                    {shiny && <>
+                    {!isLowPerformance() && shiny && <>
                         <div
                             style={{ maskImage: `url('${image.replaceAll("'", "\\'")}` }}
                             className={styles.overlay}

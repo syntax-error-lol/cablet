@@ -1,10 +1,10 @@
-import { ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import { useUser } from "@stores/UserStore";
 import { useSocket } from "@stores/SocketStore";
 import { useNavigate } from "react-router-dom";
 import { SocketMessageType } from "@blacket/types";
 
-export function SocketWrapper({ children }: { children: ReactNode }) {
+export function SocketDefiner() {
     const { user, setUser } = useUser();
     const { socket, initializeSocket } = useSocket();
     const navigate = useNavigate();
@@ -66,5 +66,5 @@ export function SocketWrapper({ children }: { children: ReactNode }) {
         };
     }, [socket, user]);
 
-    return children;
+    return null;
 }

@@ -5,7 +5,7 @@ import { Modal, Button, ErrorContainer } from "@components/index";
 import { SecurityKey } from ".";
 import { useGenerateRegistration } from "@controllers/auth/webauthn/useGenerateRegistration/index";
 import { useVerifyRegistration } from "@controllers/auth/webauthn/useVerifyRegistration/index";
-import styles from "../settings.module.scss";
+import styles from "../security.module.scss";
 
 export default function ManageSecurityKeysModal() {
     const { user } = useUser();

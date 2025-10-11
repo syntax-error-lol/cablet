@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Twemoji from "react-twemoji";
 import { Editor, Transforms } from "slate";
@@ -22,8 +22,6 @@ export default memo(function ChatMessage({ message, newUser, mentionsMe, isSendi
 
     const [editor, setEditor] = useState<Editor | null>(null);
     const [contentKey, setContentKey] = useState(0);
-
-    const editingInputRef = useRef<HTMLDivElement>(null);
 
     const author = cachedUsers.find((user) => user.id === message.authorId) || null;
     const replyingToAuthor = cachedUsers.find((user) => user.id === message?.replyingTo?.authorId) || null;
@@ -167,14 +165,13 @@ export default memo(function ChatMessage({ message, newUser, mentionsMe, isSendi
                                 : <>
                                     <MarkdownEditor
                                         key={contentKey}
-                                        ref={editingInputRef}
                                         content={message.content}
                                         color={message.color || undefined}
                                         className={styles.editingMessageInput}
                                         autoFocus={true}
                                         readOnly={false}
                                         getEditor={(editor) => setEditor(editor)}
-                                        onKeyDown={(e: KeyboardEvent) => {
+                                        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                                             if (!e.repeat) {
                                                 if (e.key === "Enter" && !e.shiftKey) {
                                                     e.preventDefault();

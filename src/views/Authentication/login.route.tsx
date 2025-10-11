@@ -4,5 +4,5 @@ import { AuthenticationType } from "./authentication.d";
 export default {
     path: "/login",
     component: <Authentication type={AuthenticationType.LOGIN} />,
-    header: { right: { text: "Register", link: "/register" } }
+    header: { right: { text: "Register", link: "/register" }, glass: true }
 } as BlacketRoute;

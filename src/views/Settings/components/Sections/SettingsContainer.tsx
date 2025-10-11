@@ -1,4 +1,4 @@
-import { SettingsContainerProps } from "../settings.d";
+import { SettingsContainerProps } from "../../settings.d";
 import { Container } from "@components/index";
 
 export default function SettingsContainer({ header, children }: SettingsContainerProps) {
