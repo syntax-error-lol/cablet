@@ -75,8 +75,7 @@ export default function Authentication({ type }: AuthenticationProps) {
     return (
         <>
             <div className={styles.background} style={{
-                // backgroundImage: `url('${window.constructCDNUrl("/content/auth-background.png")}')`
-                backgroundImage: "url('https://cdn.discordapp.com/attachments/1420555907703640164/1424502904143872102/Untitled3119_20251005170520.png?ex=68e4d7f6&is=68e38676&hm=cd653ede4c74bc347345d788af81dd2b6e3fbc3a9499dd6ef56a987ba4cf837d&')"
+                backgroundImage: `url('${window.constructCDNUrl("/content/auth-background.png")}')`
             }} />
 
             <Water />

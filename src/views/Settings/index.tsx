@@ -36,7 +36,7 @@ export default function Settings() {
             icon: "fas fa-palette",
             text: "Cosmetics",
             path: "/settings/cosmetics",
-            element: Section.Profile
+            element: Section.Cosmetics
         },
         {
             icon: "fas fa-info-circle",
