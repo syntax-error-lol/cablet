@@ -24,7 +24,7 @@ const fetchInterceptor = (method: HTTPMethod) => (url: string, body: JSON) => ne
             data = null;
         }
 
-        if (!response.ok && data.message === "Internal server error") data.message = "Something went wrong.";
+        if (!response.ok && data?.message === "Internal server error") data.message = "Something went wrong.";
 
         if (!response.ok) reject({ ok: response.ok, status: response.status, data });
         else resolve({ ok: response.ok, status: response.status, data });
@@ -47,7 +47,7 @@ const fetchUploadInterceptor = (method: HTTPMethod) => (url: string, body: FormD
             data = null;
         }
 
-        if (!response.ok && data.message === "Internal server error") data.message = "Something went wrong.";
+        if (!response.ok && data?.message === "Internal server error") data.message = "Something went wrong.";
 
         if (!response.ok) reject({ ok: response.ok, status: response.status, data });
         else resolve({ ok: response.ok, status: response.status, data });

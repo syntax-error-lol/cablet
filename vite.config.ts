@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
 
 const clientEnv = {
-    VITE_BACKEND_URL: process.env.VITE_BACKEND_URL || "http://localhost:4000",
+    VITE_BACKEND_URL: process.env.VITE_BACKEND_URL || "",
     VITE_MEDIA_URL: process.env.VITE_MEDIA_URL || "https://blacket-rewrite-frontend.onrender.com",
     VITE_MEDIA_BACKUP_URL: process.env.VITE_MEDIA_BACKUP_URL || "https://blacket-rewrite-frontend.onrender.com",
     VITE_INFORMATION_NAME: process.env.VITE_INFORMATION_NAME || "Blacket",
