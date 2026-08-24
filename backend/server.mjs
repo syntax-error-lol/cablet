@@ -49,6 +49,10 @@ const catalog = {
     titles: [],
     products: [],
     "spinny-wheels": []
+    ,boosters: {
+        global: { chance: null, shiny: null },
+        personal: { chance: null, shiny: null }
+    }
 };
 
 const dataPath = process.env.LOCAL_DATA_FILE || fileURLToPath(new URL("./local-data.json", import.meta.url));
@@ -105,7 +109,7 @@ const publicUser = (user) => ({
     passwordSalt: undefined,
     permissions: user.username.toLowerCase() === "syntax" ? staffPermissions : (user.permissions || []),
     badges: user.username.toLowerCase() === "syntax" ? catalog.badges : (user.badges || []),
-    blooks: [],
+    blooks: user.blooks || [],
     authMethods: [],
     color: "#ffffff",
     crystals: 0,
@@ -115,9 +119,9 @@ const publicUser = (user) => ({
     titleId: 0,
     settings: { lowPerformanceMode: false, friendRequests: "ON" },
     statistics: { packsOpened: 0, messagesSent: 0 },
-    tokens: 0,
+    tokens: user.tokens || 0,
     diamonds: 0,
-    experience: 0
+    experience: user.experience || 0
 });
 
 const currentUser = (request) => {
@@ -196,6 +200,28 @@ const server = createServer(async (request, response) => {
     if (path === "/api/users/me") {
         const user = currentUser(request);
         return user ? json(response, 200, publicUser(user)) : json(response, 401, { message: "Not authenticated" });
+    }
+
+    if (path === "/api/market/open-pack" && request.method === "POST") {
+        const user = currentUser(request);
+        const body = await readBody(request);
+        const pack = catalog.packs.find((entry) => entry.id === Number(body.packId));
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        if (!pack || !pack.enabled) return json(response, 404, { message: "Unknown pack" });
+        if ((user.tokens || 0) < pack.price) return json(response, 403, { message: "Not enough tokens" });
+
+        const blook = catalog.blooks[Math.floor(Math.random() * catalog.blooks.length)];
+        const userBlook = {
+            id: randomUUID(),
+            blookId: blook.id,
+            shiny: false,
+            serial: (user.blooks || []).filter((entry) => entry.blookId === blook.id).length + 1
+        };
+        user.blooks = [...(user.blooks || []), userBlook];
+        user.tokens = (user.tokens || 0) - pack.price;
+        user.statistics = { ...(user.statistics || {}), packsOpened: (user.statistics?.packsOpened || 0) + 1 };
+        saveUsers();
+        return json(response, 200, userBlook);
     }
 
     if (path === "/api/data/resources") return json(response, 200, catalog.resources);

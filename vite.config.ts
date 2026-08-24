@@ -5,8 +5,8 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), "");
     const clientEnv = {
         VITE_BACKEND_URL: process.env.VITE_BACKEND_URL || (mode === "development" ? env.VITE_BACKEND_URL || "" : ""),
-        VITE_MEDIA_URL: env.VITE_MEDIA_URL || "https://blacket-rewrite-frontend.onrender.com",
-        VITE_MEDIA_BACKUP_URL: env.VITE_MEDIA_BACKUP_URL || "https://blacket-rewrite-frontend.onrender.com",
+        VITE_MEDIA_URL: process.env.VITE_MEDIA_URL || "",
+        VITE_MEDIA_BACKUP_URL: process.env.VITE_MEDIA_BACKUP_URL || "",
         VITE_INFORMATION_NAME: env.VITE_INFORMATION_NAME || "Blacket",
         VITE_INFORMATION_VERSION: env.VITE_INFORMATION_VERSION || "local",
         VITE_INFORMATION_PRONUNCIATION: env.VITE_INFORMATION_PRONUNCIATION || "black-et",
