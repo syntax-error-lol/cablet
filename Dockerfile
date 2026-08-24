@@ -1,11 +1,18 @@
-FROM oven/bun:latest
+FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package.json bun.lockb ./
+COPY package*.json ./
 
-RUN bun install --frozen-lockfile
+RUN npm install --legacy-peer-deps
 
 COPY . .
 
-CMD ["bun", "run", "dev"]
+RUN npx vite build
+
+ENV NODE_ENV=production
+ENV LOCAL_DATA_FILE=/var/data/local-data.json
+
+EXPOSE 4000
+
+CMD ["node", "backend/server.mjs"]

@@ -1,9 +1,10 @@
 .headerBody {
-    position: absolute;
+    position: relative;
     width: 100%;
-    height: calc(100% - 55px);
-    z-index: -1;
+    min-height: calc(100dvh - 55px);
+    z-index: 2;
     top: 55px;
+    box-sizing: border-box;
     /* left: 0;
     margin: 0;
     padding: 0;

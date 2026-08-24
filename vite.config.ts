@@ -4,10 +4,18 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: "../.env" });
 
+const clientEnv = {
+    VITE_BACKEND_URL: process.env.VITE_BACKEND_URL || "http://localhost:4000",
+    VITE_MEDIA_URL: process.env.VITE_MEDIA_URL || "https://blacket-rewrite-frontend.onrender.com",
+    VITE_MEDIA_BACKUP_URL: process.env.VITE_MEDIA_BACKUP_URL || "https://blacket-rewrite-frontend.onrender.com",
+    VITE_INFORMATION_NAME: process.env.VITE_INFORMATION_NAME || "Blacket",
+    VITE_INFORMATION_VERSION: process.env.VITE_INFORMATION_VERSION || "local"
+};
+
 export default defineConfig({
     plugins: [react()],
     define: {
-        "import.meta.env": Object.fromEntries(Object.entries(process.env).map(([key, value]) => [`VITE_${key}`, value]))
+        "import.meta.env": Object.fromEntries(Object.entries(clientEnv).map(([key, value]) => [key, value]))
     },
     resolve: {
         alias: {
@@ -24,12 +32,12 @@ export default defineConfig({
     server: {
         proxy: {
             "/api": {
-                target: process.env.VITE_BACKEND_URL,
+                target: process.env.VITE_BACKEND_URL || "http://localhost:4000",
                 changeOrigin: true,
                 ws: true
             },
             "/gateway": {
-                target: process.env.VITE_BACKEND_URL,
+                target: process.env.VITE_BACKEND_URL || "http://localhost:4000",
                 changeOrigin: true,
                 ws: true
             }

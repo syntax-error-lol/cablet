@@ -24,5 +24,7 @@ export const urlToImage = (url: string): Promise<HTMLImageElement | HTMLVideoEle
 
             resolve(image);
         };
+
+        image.onerror = () => resolve(image);
     });
 };

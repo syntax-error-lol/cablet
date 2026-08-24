@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import Turnstile from "react-turnstile";
 import { useLoading } from "@stores/LoadingStore";
 import { useUser } from "@stores/UserStore";
 import { useLogin } from "@controllers/auth/useLogin/index";
@@ -15,11 +14,7 @@ export default function Authentication({ type }: AuthenticationProps) {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [checked, setChecked] = useState<boolean>(false);
-    const [otpRequired, setOtpRequired] = useState<boolean>(false);
-    const [otpCode, setOtpCode] = useState<string>("");
-    const [captchaToken, setCaptchaToken] = useState<string>("");
     const [error, setError] = useState<string>("");
-    const [tries, setTries] = useState<number>(0);
 
     const { setLoading } = useLoading();
     const { user } = useUser();
@@ -37,16 +32,12 @@ export default function Authentication({ type }: AuthenticationProps) {
 
         if (type === AuthenticationType.LOGIN) {
             setLoading("Logging in");
-            login({ username, password, otpCode: (otpRequired ? otpCode : undefined), captchaToken })
+            login({ username, password, captchaToken: "" })
                 .then(() => {
                     setLoading("Reloading");
                     window.location.reload();
                 })
                 .catch((err) => {
-                    setTries((prev) => prev + 1);
-
-                    if (err.status === 401) return setOtpRequired(true), setLoading(false);
-
                     if (err?.data?.message) setError(err.data.message);
                     else setError("Something went wrong.");
 
@@ -56,14 +47,12 @@ export default function Authentication({ type }: AuthenticationProps) {
             if (!checked) return setError("You must agree to our Privacy Policy and Terms of Service.");
 
             setLoading("Registering");
-            register({ username, password, captchaToken })
+            register({ username, password, captchaToken: "" })
                 .then(() => {
                     setLoading("Reloading");
                     window.location.reload();
                 })
                 .catch((err) => {
-                    setTries((prev) => prev + 1);
-
                     if (err?.data?.message) setError(err.data.message);
                     else setError("Something went wrong.");
 
@@ -95,8 +84,6 @@ export default function Authentication({ type }: AuthenticationProps) {
                             maxLength={16}
                             onChange={(e) => {
                                 setUsername(e.target.value);
-                                setOtpRequired(false);
-                                setOtpCode("");
                                 setError("");
                             }}
                             className={styles.input}
@@ -114,20 +101,6 @@ export default function Authentication({ type }: AuthenticationProps) {
                             className={styles.input}
                         />
 
-                        {otpRequired && (
-                            <Input
-                                icon="fas fa-key"
-                                placeholder="OTP / 2FA Code"
-                                type="text"
-                                autoComplete="off"
-                                onChange={(e) => {
-                                    setOtpCode(e.target.value);
-                                    setError("");
-                                }}
-                                className={styles.input}
-                            />
-                        )}
-
                         {type === AuthenticationType.REGISTER && <>
                             <div className={styles.agreeHolder}>
                                 <Toggle
@@ -143,13 +116,6 @@ export default function Authentication({ type }: AuthenticationProps) {
                                 </Toggle>
                             </div>
                         </>}
-
-                        <Turnstile
-                            key={tries}
-                            sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-                            onVerify={setCaptchaToken}
-                            theme="light"
-                        />
 
                         <Button.ClearButton style={{ marginTop: 10, fontSize: 25, padding: "5px 20px" }} onClick={submitForm}>
                             {type === AuthenticationType.LOGIN ? "Login" : "Register"}

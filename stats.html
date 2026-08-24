@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="stats.css" />
+    <link rel="stylesheet" href="sidebar.css" />
+    <link rel="stylesheet" href="general.css" />
+    <script src="stats.js" type="module" defer="">
+    </script>
+    <link rel="icon" type="image/png" href="/content/blooks/cablet.png" />
+    <title>
+      Stats | Cablet
+    </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+    </script>
+  </head>
+  <body>
+    <div class="sidebar">
+      <a id="bigName" class="nameText">      name
+</a>
+      <div class="sidebarLinks">
+      </div>
+    </div>
+    <div>
+      <div class="background">
+        <div class="background-image">
+        </div>
+      </div>
+    </div>
+    <div id="app">
+      <div class="app-body">
+        <div class="app-body-container">
+          <div class="header-row">
+            <div class="left-header">
+              <div class="left-header-row">
+                <div class="blook-header-container" role="button" tabindex="0">
+                  <div class="blook-container header-blook">
+                    <img loading="lazy" id="userAvatar" src="/content/blooks/default.png" draggable="false" class="blook" />
+                  </div>
+                </div>
+                <div class="header-i">
+                  <div class="header-banner">
+                    <img loading="lazy" src="/content/banners/default.png" class="header-banner-bg" draggable="false" />
+                    <div class="username">
+                      username
+                    </div>
+                    <div class="title">
+                      role
+                    </div>
+                  </div>
+                  <div class="badges" style="position: absolute; margin-left: 15.104vw; display: flex; padding: 0.130vw;">
+                  </div>
+                  <div class="level-bar-container">
+                    <div class="level-bar">
+                      <div class="inner-level-bar" style="transform: scaleX(0)">
+                      </div>
+                    </div>
+                    <div class="star-container">
+                      <img loading="lazy" src="https://blacket.org/content/levelStar.webp" alt="Star" class="star-img" draggable="false" />
+                      <div class="star-level">
+                        0
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="header-buttons" style="flex-flow: row;">
+                <!--<a class="button top" role="button" tabindex="0">
+								<div class="shadow"></div>
+								<div class="edge" style="background-color: #EB6133;"></div>
+								<div class="front" style="background-color: #EB6133;">
+									<div class="inner-button"><i class="button-icon fas fa-search" aria-hidden="true"></i>View Stats</div>
+								</div>
+							</a>
+							<a class="button top" role="button" tabindex="0">
+								<div class="shadow"></div>
+								<div class="edge" style="background-color: #01C873;"></div>
+								<div class="front" style="background-color: #01C873;">
+									<div class="inner-button"><i class="button-icon fas fa-handshake" aria-hidden="true"></i>Trade</div>
+								</div>
+							</a>-->
+                <a class="button top" id="spinButton" role="button" tabindex="0">                <div class="shadow">
+                </div>
+                <div class="edge" style="background-color: #560085">
+                </div>
+                <div class="front" style="background-color: #a001c8; height: .8vw;">
+                  <div class="inner-button" style="font-size: .625vw;">
+                    <i class="button-icon fas fa-star" aria-hidden="true"></i>
+                    Claim Tokens
+                  </div>
+                </div>
+</a>
+                <a href="/market" class="button top" role="button" tabindex="0">                <div class="shadow">
+                </div>
+                <div class="edge" style="background-color: rgb(255, 163, 30);">
+                </div>
+                <div class="front" style="background-color: rgb(255, 163, 30); height: .8vw;">
+                  <div class="inner-button" style="font-size: .625vw;">
+                    <i class="button-icon fas fa-store" aria-hidden="true"></i>
+                    Unlock Items
+                  </div>
+                </div>
+</a>
+                <a href="/inventory" class="button top" role="button" tabindex="0">                <div class="shadow">
+                </div>
+                <div class="edge" style="background-color: rgb(30, 146, 255);">
+                </div>
+                <div class="front" style="background-color: rgb(30, 146, 255); height: .8vw;">
+                  <div class="inner-button" style="font-size: .625vw;">
+                    <i class="button-icon fas fa-suitcase" aria-hidden="true"></i>
+                    Manage Items
+                  </div>
+                </div>
+</a>
+              </div>
+              <div>
+                <div>
+                  <div>
+                    <div>
+                      <div style="text-align: center; margin-top: 1.2vw; right: -10%; position: relative;">
+                        Stats
+                      </div>
+                    </div>
+                    <div class="stats">
+                      <div id="userTokenContainer" class="stats-container">
+                        <div class="stat-item-title">
+                          Tokens
+                        </div>
+                        <div id="tokens" class="stats-item-quantity">
+                          tokens
+                        </div>
+                        <img class="stat-img" style="rotate: 346deg; transform: translateY(0%) translateX(8vw);" src="/content/icons/tokenIcon.png" alt="Token" />
+                      </div>
+                      <div id="userBlooksContainer" class="stats-container">
+                        <div class="stat-item-title">
+                          Blooks
+                        </div>
+                        <div id="blooks" class="stats-item-quantity">
+                          blooks
+                        </div>
+                        <img class="stat-img" src="/content/icons/unlockedIcon.png" alt="Unlocked" />
+                      </div>
+                      <div id="userPacksContainer" class="stats-container">
+                        <div class="stat-item-title">
+                          Opened
+                        </div>
+                        <div id="opened" class="stats-item-quantity">
+                          packs
+                        </div>
+                        <img class="stat-img" src="/content/icons/packIcon.png" alt="Opened" />
+                      </div>
+                      <!--<div id="userMessagesContainer" class="stats-container"><div class="stat-item-title">Messages</div><div id="messages" class="stats-item-quantity">messages</div><img class="stat-img" src="/content/icons/messageIcon.png" alt="Message"></div>-->
+                      <div id="userExpContainer" class="stats-container">
+                        <div class="stat-item-title">
+                          Experience
+                        </div>
+                        <div id="exp" class="stats-item-quantity">
+                          exp
+                        </div>
+                        <img class="stat-img" src="https://ac.blooket.com/dashclassic/assets/Points-D4uD8X6I.svg" alt="Exp" />
+                      </div>
+                      <!--<div id="userListingsContainer" class="stats-container"><div class="stat-item-title">Listings</div><div id="listings" class="stats-item-quantity">listings</div><img class="stat-img" src="/gavel.svg" alt="Unlocked"></div>-->
+                      <div id="userPermsContainer" class="stats-container">
+                        <div class="stat-item-title">
+                          Perms
+                        </div>
+                        <div id="perms" class="stats-item-quantity">
+                          perms
+                        </div>
+                        <img class="stat-img" src="https://ac.blooket.com/dashclassic/assets/CorrectAnswers-BMzYvD5t.svg" alt="Opened" />
+                      </div>
+                      <!--<div id="userFriendsNumContainer" class="stats-container"><div class="stat-item-title">Friends</div><div id="friendsNum" class="stats-item-quantity">friends</div><img class="stat-img" src="/friends.svg" alt="Message"></div>-->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

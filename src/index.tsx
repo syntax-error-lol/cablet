@@ -12,3 +12,5 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <App />
     </HelmetProvider>
 );
+
+document.getElementById("preloader")?.remove();

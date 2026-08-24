@@ -1,5 +1,14 @@
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 @import url("https://fonts.googleapis.com/css?family=Nunito:400,700|Titan+One|Creepster|Satisfy|Eczar:700");
 @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
+
+html {
+    zoom: 0.8;
+
+    @media only screen and (max-width: 850px) {
+        zoom: 1;
+    }
+}
 
 :root {
     --background-opacity: 0.05;
@@ -63,7 +72,7 @@ body {
     left: 0;
     min-width: 100vw;
     min-height: 100vh;
-    z-index: -1;
+    z-index: 0;
 
     @media only screen and (max-width: 850px) {
         min-height: calc(100vh - 55px) !important;
@@ -80,6 +89,11 @@ body {
             margin-top: 55px;
         }
     }
+}
+
+#app {
+    position: relative;
+    z-index: 1;
 }
 
 button {

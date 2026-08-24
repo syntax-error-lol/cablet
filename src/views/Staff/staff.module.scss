@@ -1,6 +1,122 @@
 .panelContainer {
     display: flex;
-    flex-flow: row wrap;
-    justify-content: flex-start;
-    margin: -5px calc(5% - 12px);
+    flex-direction: column;
+    gap: 18px;
+    margin: 0 auto;
+    max-width: 1100px;
+    padding: 24px 5%;
+    width: 90%;
+}
+
+.hero,
+.section {
+    background: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.hero {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.eyebrow {
+    color: #7dd3fc;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+h1,
+h2,
+p {
+    margin: 0;
+}
+
+h1 {
+    font-size: 2rem;
+    margin: 6px 0;
+}
+
+h2 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+}
+
+p,
+.catalogRow,
+.stat span {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ownerBadge {
+    align-items: center;
+    background: #f0b429;
+    border-radius: 999px;
+    color: #241500;
+    display: flex;
+    font-size: 0.8rem;
+    font-weight: 700;
+    gap: 8px;
+    padding: 10px 14px;
+}
+
+.statsGrid,
+.catalogGrid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.stat,
+.catalogRow {
+    background: var(--secondary-color);
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stat i {
+    color: #7dd3fc;
+    font-size: 1.2rem;
+}
+
+.stat strong {
+    font-size: 1.6rem;
+}
+
+.catalogGrid {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.catalogRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+@media only screen and (max-width: 700px) {
+    .hero {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .statsGrid,
+    .catalogGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
