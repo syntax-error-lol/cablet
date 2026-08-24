@@ -32,10 +32,10 @@ const staffPermissions = [
 
 const catalog = {
     resources: [
-        { id: 1, path: "/content/blooks/Default.webp" },
-        { id: 2, path: "/content/banners/Default.webp" },
-        { id: 3, path: "/content/logo.webp" },
-        { id: 4, path: "/content/content-background.webp" }
+        { id: 1, path: "/content/blooks/Default.png" },
+        { id: 2, path: "/content/banners/Default.png" },
+        { id: 3, path: "/content/logo.png" },
+        { id: 4, path: "/content/background.png" }
     ],
     badges: [{ id: 1, name: "Owner", imageId: 3, priority: 0 }],
     banners: [{ id: 1, name: "Default Banner", imageId: 2 }],
@@ -142,11 +142,20 @@ const serveFrontend = (request, response) => {
         js: "text/javascript; charset=utf-8",
         json: "application/json",
         svg: "image/svg+xml",
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
         ico: "image/x-icon",
         gif: "image/gif",
         png: "image/png",
         webp: "image/webp",
-        woff2: "font/woff2"
+        woff: "font/woff",
+        woff2: "font/woff2",
+        ttf: "font/ttf",
+        otf: "font/otf",
+        mp3: "audio/mpeg",
+        ogg: "audio/ogg",
+        mp4: "video/mp4",
+        webm: "video/webm"
     };
 
     response.writeHead(200, { "Content-Type": contentTypes[extension] || "application/octet-stream" });
