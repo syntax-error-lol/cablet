@@ -87,6 +87,7 @@ const loadUsers = () => {
 };
 const users = loadUsers();
 const sessions = new Map();
+const messages = new Map();
 const isOwner = (user) => user?.username?.toLowerCase() === "syntax";
 
 const hashPassword = (password, salt) => scryptSync(password, salt, 64).toString("hex");
@@ -149,6 +150,14 @@ const currentUser = (request) => {
     const token = request.headers.authorization?.replace(/^Bearer\s+/i, "");
     return sessions.get(token);
 };
+
+const chatMessage = (user, roomId, body) => ({
+    id: randomUUID(), roomId, authorId: user.id, author: publicUser(user),
+    content: String(body.content || ""), color: user.settings?.chatColor || "#ffffff",
+    mentions: [], replyingToId: body.replyingTo || null, replyingTo: undefined,
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    discordMessageId: null, deletedAt: null, editedAt: null, nonce: body.nonce
+});
 
 const serveFrontend = (request, response) => {
     const pathname = new URL(request.url || "/", "http://localhost").pathname;
@@ -235,6 +244,43 @@ const server = createServer(async (request, response) => {
     if (path === "/api/users/me") {
         const user = currentUser(request);
         return user ? json(response, 200, publicUser(user)) : json(response, 401, { message: "Not authenticated" });
+    }
+
+    if (path.match(/^\/api\/chat\/messages\/\d+$/) && request.method === "GET") {
+        const roomId = Number(path.split("/").pop());
+        return json(response, 200, (messages.get(roomId) || []).slice(-50).reverse());
+    }
+
+    if (path.match(/^\/api\/chat\/messages\/\d+$/) && request.method === "POST") {
+        const user = currentUser(request);
+        const body = await readBody(request);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        if (!String(body.content || "").trim()) return json(response, 400, { message: "Message cannot be empty." });
+        const roomId = Number(path.split("/").pop());
+        const message = chatMessage(user, roomId, body);
+        messages.set(roomId, [...(messages.get(roomId) || []), message]);
+        user.statistics = { ...(user.statistics || {}), messagesSent: (user.statistics?.messagesSent || 0) + 1 };
+        saveUsers();
+        return json(response, 201, message);
+    }
+
+    if (path.match(/^\/api\/chat\/messages\/\d+\/[^/]+$/) && (request.method === "PUT" || request.method === "DELETE")) {
+        const user = currentUser(request);
+        const parts = path.split("/");
+        const roomId = Number(parts[4]);
+        const messageId = parts[5];
+        const roomMessages = messages.get(roomId) || [];
+        const message = roomMessages.find((entry) => entry.id === messageId);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        if (!message) return json(response, 404, { message: "Message not found" });
+        if (message.authorId !== user.id && !isOwner(user)) return json(response, 403, { message: "You cannot change this message." });
+        if (request.method === "PUT") {
+            const body = await readBody(request);
+            message.content = String(body.content || "");
+            message.editedAt = new Date().toISOString();
+        } else message.deletedAt = new Date().toISOString();
+        messages.set(roomId, roomMessages);
+        return json(response, 200, {});
     }
 
     if (path.startsWith("/api/users/") && request.method === "GET") {

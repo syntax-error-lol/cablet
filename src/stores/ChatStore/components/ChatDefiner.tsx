@@ -173,9 +173,12 @@ export default function ChatDefiner() {
     };
 
     useEffect(() => {
-        if (!connected || !user || !socket) return;
+        if (!user) return;
 
         fetchMessages(room);
+
+        const refreshId = connected ? undefined : setInterval(() => fetchMessages(room), 3000);
+        if (!connected || !socket) return () => refreshId && clearInterval(refreshId);
 
         let tickTimeoutId: any;
 
@@ -202,6 +205,7 @@ export default function ChatDefiner() {
 
         return () => {
             if (tickTimeoutId) clearTimeout(tickTimeoutId);
+            if (refreshId) clearInterval(refreshId);
 
             socket.off(SocketMessageType.CHAT_MESSAGES_CREATE, onChatMessageCreate);
             socket.off(SocketMessageType.CHAT_MESSAGES_UPDATE, onChatMessageUpdate);
