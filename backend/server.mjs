@@ -40,9 +40,15 @@ const catalog = {
         { id: 6, path: "/content/blooks/Console.gif" },
         { id: 7, path: "/content/blooks/Warning.png" },
         { id: 8, path: "/content/packs/Debug.png" },
-        { id: 9, path: "/content/packs/Miscellaneous.png" }
+        { id: 9, path: "/content/packs/Miscellaneous.png" },
+        { id: 10, path: "/content/shield.png" },
+        { id: 11, path: "/content/levelStar.png" }
     ],
-    badges: [{ id: 1, name: "Owner", imageId: 3, priority: 0 }],
+    badges: [
+        { id: 1, name: "Owner", imageId: 3, priority: 0 },
+        { id: 2, name: "Staff", imageId: 10, priority: 1 },
+        { id: 3, name: "Founder", imageId: 11, priority: 2 }
+    ],
     banners: [{ id: 1, name: "Default Banner", imageId: 2 }],
     blooks: [
         { id: 1, name: "Default Blook", imageId: 1, rarityId: 1, price: 5, description: "A local starter blook.", isBig: false },
@@ -244,6 +250,18 @@ const server = createServer(async (request, response) => {
     if (path === "/api/users/me") {
         const user = currentUser(request);
         return user ? json(response, 200, publicUser(user)) : json(response, 401, { message: "Not authenticated" });
+    }
+
+    if (path === "/api/staff/users" && request.method === "GET") {
+        const user = currentUser(request);
+        if (!user || !isOwner(user)) return json(response, 403, { message: "Staff access required" });
+        return json(response, 200, [...users.values()].map(publicUser));
+    }
+
+    if (path === "/api/staff/reports" && request.method === "GET") {
+        const user = currentUser(request);
+        if (!user || !isOwner(user)) return json(response, 403, { message: "Staff access required" });
+        return json(response, 200, []);
     }
 
     if (path.match(/^\/api\/chat\/messages\/\d+$/) && request.method === "GET") {
