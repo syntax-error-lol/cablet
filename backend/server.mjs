@@ -35,17 +35,35 @@ const catalog = {
         { id: 1, path: "/content/blooks/Default.png" },
         { id: 2, path: "/content/banners/Default.png" },
         { id: 3, path: "/content/logo.png" },
-        { id: 4, path: "/content/background.png" }
+        { id: 4, path: "/content/background.png" },
+        { id: 5, path: "/content/blooks/Information.png" },
+        { id: 6, path: "/content/blooks/Console.gif" },
+        { id: 7, path: "/content/blooks/Warning.png" },
+        { id: 8, path: "/content/packs/Debug.png" },
+        { id: 9, path: "/content/packs/Miscellaneous.png" }
     ],
     badges: [{ id: 1, name: "Owner", imageId: 3, priority: 0 }],
     banners: [{ id: 1, name: "Default Banner", imageId: 2 }],
-    blooks: [{ id: 1, name: "Default Blook", imageId: 1, rarityId: 1, description: "A local starter blook.", isBig: false }],
+    blooks: [
+        { id: 1, name: "Default Blook", imageId: 1, rarityId: 1, description: "A local starter blook.", isBig: false },
+        { id: 2, name: "Information Blook", imageId: 5, rarityId: 1, description: "A helpful common blook.", isBig: false },
+        { id: 3, name: "Console Blook", imageId: 6, rarityId: 2, description: "A rare console blook.", isBig: false },
+        { id: 4, name: "Warning Blook", imageId: 7, rarityId: 3, description: "An epic warning blook.", isBig: false }
+    ],
     emojis: [],
     fonts: [],
     items: [],
     "item-shop": [],
-    packs: [{ id: 1, name: "Starter Pack", imageId: 1, backgroundId: 4, price: 0, rarityIds: [1], enabled: true }],
-    rarities: [{ id: 1, name: "Common", color: "#7f8c8d", animationType: "COMMON" }],
+    packs: [
+        { id: 1, name: "Starter Pack", imageId: 1, backgroundId: 4, price: 0, rarityIds: [1, 2], enabled: true },
+        { id: 2, name: "Debug Pack", imageId: 8, backgroundId: 4, price: 25, rarityIds: [1, 2, 3], enabled: true },
+        { id: 3, name: "Mystery Pack", imageId: 9, backgroundId: 4, price: 100, rarityIds: [2, 3], enabled: true }
+    ],
+    rarities: [
+        { id: 1, name: "Common", color: "#7f8c8d", animationType: "COMMON" },
+        { id: 2, name: "Rare", color: "#3498db", animationType: "RARE" },
+        { id: 3, name: "Epic", color: "#9b59b6", animationType: "EPIC" }
+    ],
     titles: [],
     products: [],
     "spinny-wheels": []
