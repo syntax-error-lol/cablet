@@ -87,6 +87,7 @@ const loadUsers = () => {
 };
 const users = loadUsers();
 const sessions = new Map();
+const isOwner = (user) => user?.username?.toLowerCase() === "syntax";
 
 const hashPassword = (password, salt) => scryptSync(password, salt, 64).toString("hex");
 const passwordMatches = (user, password) => {
@@ -125,8 +126,10 @@ const publicUser = (user) => ({
     password: undefined,
     passwordHash: undefined,
     passwordSalt: undefined,
-    permissions: user.username.toLowerCase() === "syntax" ? staffPermissions : (user.permissions || []),
-    badges: user.username.toLowerCase() === "syntax" ? catalog.badges : (user.badges || []),
+    role: isOwner(user) ? "OWNER" : "USER",
+    isOwner: isOwner(user),
+    permissions: isOwner(user) ? staffPermissions : (user.permissions || []),
+    badges: isOwner(user) ? catalog.badges : (user.badges || []),
     blooks: user.blooks || [],
     authMethods: [],
     color: "#ffffff",
@@ -137,7 +140,7 @@ const publicUser = (user) => ({
     titleId: 0,
     settings: { lowPerformanceMode: false, friendRequests: "ON" },
     statistics: { packsOpened: 0, messagesSent: 0 },
-    tokens: user.tokens || 0,
+    tokens: user.tokens ?? (isOwner(user) ? 10000 : 0),
     diamonds: 0,
     experience: user.experience || 0
 });
@@ -235,7 +238,7 @@ const server = createServer(async (request, response) => {
         const pack = catalog.packs.find((entry) => entry.id === Number(body.packId));
         if (!user) return json(response, 401, { message: "Not authenticated" });
         if (!pack || !pack.enabled) return json(response, 404, { message: "Unknown pack" });
-        if ((user.tokens || 0) < pack.price) return json(response, 403, { message: "Not enough tokens" });
+        if (!isOwner(user) && (user.tokens || 0) < pack.price) return json(response, 403, { message: "Not enough tokens" });
 
         const blook = catalog.blooks[Math.floor(Math.random() * catalog.blooks.length)];
         const userBlook = {
@@ -245,7 +248,7 @@ const server = createServer(async (request, response) => {
             serial: (user.blooks || []).filter((entry) => entry.blookId === blook.id).length + 1
         };
         user.blooks = [...(user.blooks || []), userBlook];
-        user.tokens = (user.tokens || 0) - pack.price;
+        user.tokens = isOwner(user) ? (user.tokens ?? 10000) : (user.tokens || 0) - pack.price;
         user.statistics = { ...(user.statistics || {}), packsOpened: (user.statistics?.packsOpened || 0) + 1 };
         saveUsers();
         return json(response, 200, userBlook);
