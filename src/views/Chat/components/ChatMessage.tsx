@@ -4,6 +4,7 @@ import Twemoji from "react-twemoji";
 import { Editor, Transforms } from "slate";
 import { useUser } from "@stores/UserStore/index";
 import { useCachedUser } from "@stores/CachedUserStore/index";
+import { useResource } from "@stores/ResourceStore/index";
 import MarkdownEditor from "./MarkdownEditor";
 import timestamps from "@functions/blacket/timestamps";
 import { Blook, Username } from "@components/index";
@@ -19,11 +20,12 @@ export default memo(function ChatMessage({ message, newUser, mentionsMe, isSendi
 
     const { getUserAvatarPath, isAvatarBig } = useUser();
     const { cachedUsers } = useCachedUser();
+    const { resourceIdToPath } = useResource();
 
     const [editor, setEditor] = useState<Editor | null>(null);
     const [contentKey, setContentKey] = useState(0);
 
-    const author = cachedUsers.find((user) => user.id === message.authorId) || null;
+    const author = cachedUsers.find((user) => user.id === message.authorId) || message.author || null;
     const replyingToAuthor = cachedUsers.find((user) => user.id === message?.replyingTo?.authorId) || null;
 
     useEffect(() => {
@@ -140,15 +142,15 @@ export default memo(function ChatMessage({ message, newUser, mentionsMe, isSendi
                                 {timestamps(message.createdAt.toString())}
                             </div>
 
-                            {
-                                // TODO: badges on messages
-
-                                author.badges.length > 0 && <div className={styles.messageBadgeContainer}>
-                                    {
-                                        // badges.map((badge, index) => <img key={index} src={badge} className={styles.messageBadge} />)
-                                    }
-                                </div>
-                            }
+                            {author.badges?.length > 0 && <div className={styles.messageBadgeContainer}>
+                                {author.badges.slice(0, 6).map((badge: any) => badge.imageId && <img
+                                    key={badge.id}
+                                    src={resourceIdToPath(badge.imageId)}
+                                    className={styles.messageBadge}
+                                    alt={badge.name}
+                                    title={badge.name}
+                                />)}
+                            </div>}
                         </div>}
 
                         <div style={{

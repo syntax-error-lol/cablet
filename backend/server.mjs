@@ -3,6 +3,7 @@ import { randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { Server as SocketServer } from "socket.io";
 
 const port = Number(process.env.PORT || process.env.SERVER_PORT || 4000);
 const staticRoot = fileURLToPath(new URL("../dist/", import.meta.url));
@@ -139,10 +140,10 @@ const publicUser = (user) => ({
     badges: isOwner(user) ? catalog.badges : (user.badges || []),
     blooks: user.blooks || [],
     authMethods: [],
-    color: "#ffffff",
+    color: user.color || "#ffffff",
     crystals: 0,
     createdAt: user.createdAt,
-    fontId: 0,
+    fontId: user.fontId || 0,
     paymentMethods: [],
     titleId: 0,
     settings: { lowPerformanceMode: false, friendRequests: "ON", ...(user.settings || {}) },
@@ -264,6 +265,20 @@ const server = createServer(async (request, response) => {
         return json(response, 200, []);
     }
 
+    if (path.match(/^\/api\/staff\/users\/[^/]+$/) && request.method === "PATCH") {
+        const owner = currentUser(request);
+        if (!owner || !isOwner(owner)) return json(response, 403, { message: "Owner access required" });
+        const target = [...users.values()].find((entry) => entry.id === decodeURIComponent(path.split("/").pop()));
+        if (!target) return json(response, 404, { message: "Unknown user" });
+        const body = await readBody(request);
+        if (body.color !== undefined) target.color = String(body.color);
+        if (body.fontId !== undefined) target.fontId = Number(body.fontId);
+        if (body.titleId !== undefined) target.titleId = Number(body.titleId);
+        if (Array.isArray(body.badges)) target.badges = body.badges.map((id) => catalog.badges.find((badge) => badge.id === Number(id))).filter(Boolean);
+        saveUsers();
+        return json(response, 200, publicUser(target));
+    }
+
     if (path.match(/^\/api\/chat\/messages\/\d+$/) && request.method === "GET") {
         const roomId = Number(path.split("/").pop());
         return json(response, 200, (messages.get(roomId) || []).slice(-50).reverse());
@@ -279,6 +294,7 @@ const server = createServer(async (request, response) => {
         messages.set(roomId, [...(messages.get(roomId) || []), message]);
         user.statistics = { ...(user.statistics || {}), messagesSent: (user.statistics?.messagesSent || 0) + 1 };
         saveUsers();
+        io.emit("chat:messages:create", message);
         return json(response, 201, message);
     }
 
@@ -298,12 +314,14 @@ const server = createServer(async (request, response) => {
             message.editedAt = new Date().toISOString();
         } else message.deletedAt = new Date().toISOString();
         messages.set(roomId, roomMessages);
+        io.emit(request.method === "PUT" ? "chat:messages:update" : "chat:messages:delete", request.method === "PUT" ? message : { messageId });
+        saveUsers();
         return json(response, 200, {});
     }
 
     if (path.startsWith("/api/users/") && request.method === "GET") {
-        const username = decodeURIComponent(path.slice("/api/users/".length)).toLowerCase();
-        const user = users.get(username);
+        const identifier = decodeURIComponent(path.slice("/api/users/".length));
+        const user = users.get(identifier.toLowerCase()) || [...users.values()].find((entry) => entry.id === identifier);
         return user ? json(response, 200, publicUser(user)) : json(response, 404, { message: "Unknown user" });
     }
 
@@ -362,7 +380,7 @@ const server = createServer(async (request, response) => {
         if (path === "/api/cosmetics/font") user.fontId = body.fontId;
         if (path === "/api/cosmetics/title") user.titleId = body.titleId;
         if (path === "/api/cosmetics/avatar") user.avatarId = body.avatarId;
-        if (path === "/api/cosmetics/banner") user.bannerId = body.bannerId;
+        if (path === "/api/cosmetics/banner") user.bannerId = catalog.banners.find((banner) => banner.id === Number(body.bannerId))?.imageId;
         saveUsers();
         return json(response, 200, {});
     }
@@ -393,7 +411,14 @@ const server = createServer(async (request, response) => {
 
     if (path === "/api/stripe/stores") return json(response, 200, []);
 
-    if (path === "/api/leaderboard") return json(response, 200, { diamonds: [], experience: [] });
+    if (path === "/api/leaderboard") {
+        const ranked = [...users.values()].sort((a, b) => (b.diamonds || 0) - (a.diamonds || 0));
+        const experienced = [...users.values()].sort((a, b) => (b.experience || 0) - (a.experience || 0));
+        return json(response, 200, {
+            diamonds: ranked.slice(0, 50).map((entry) => entry.id),
+            experience: experienced.slice(0, 50).map((entry) => entry.id)
+        });
+    }
     if (path === "/api/users/transactions") return json(response, 200, []);
 
     const key = path.replace("/api/data/", "");
@@ -403,6 +428,20 @@ const server = createServer(async (request, response) => {
     if (path === "/api/news") return json(response, 200, []);
 
     return json(response, 200, {});
+});
+
+const io = new SocketServer(server, { path: "/gateway", cors: { origin: true, credentials: true } });
+io.use((socket, next) => {
+    const user = sessions.get(socket.handshake.auth?.token);
+    if (!user) return next(new Error("Not authenticated"));
+    socket.data.user = user;
+    next();
+});
+io.on("connection", (socket) => {
+    socket.on("ping", () => socket.emit("pong"));
+    socket.on("chat:typing:started", (roomId) => {
+        io.emit("chat:typing:started", { userId: socket.data.user.id, roomId, startedTypingAt: Date.now() });
+    });
 });
 
 server.listen(port, "0.0.0.0", () => {

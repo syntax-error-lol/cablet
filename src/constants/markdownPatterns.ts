@@ -6,6 +6,6 @@ export const MARKDOWN_PATTERNS = [
     { type: "underlined", regex: /__([\s\S]+?)__/g },
     { type: "link", regex: /(https?:\/\/[^\s<>"'`]+)(?!\w)/g },
 
-    { type: "mention", regex: /<@(\d+)>/g },
+    { type: "mention", regex: /<@([^>\s]+)>/g },
     { type: "color", regex: /<([#a-zA-Z0-9]+)>([\s\S]+?)<\1>/g }
 ];

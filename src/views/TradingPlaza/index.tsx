@@ -85,7 +85,6 @@ export default function TradingPlaza() {
     const brenderCanvasRef = useRef<BrenderCanvasRef>(null);
     const waterBackgroundRef = useRef<HTMLDivElement>(null);
 
-    const [useSystemTime, setUseSystemTime] = useState<boolean>(true);
     const [debugMinute, setDebugMinute] = useState<number>(() => Math.floor(minutesSinceMidnightLocal()));
     const overlayRef = useRef<RGBA>(getTimeColor(debugMinute));
 
@@ -158,14 +157,10 @@ export default function TradingPlaza() {
     }, [debugMinute]);
 
     useEffect(() => {
-        if (useSystemTime) {
-            const m = Math.floor(minutesSinceMidnightLocal());
-
-            setDebugMinute(m);
-
-            overlayRef.current = getTimeColor(m);
-        }
-    }, [useSystemTime]);
+        const updateTime = () => setDebugMinute(Math.floor(minutesSinceMidnightLocal()));
+        const interval = window.setInterval(updateTime, 60_000);
+        return () => window.clearInterval(interval);
+    }, []);
 
     useLayoutEffect(() => {
         if (!socket) return;
@@ -529,13 +524,20 @@ export default function TradingPlaza() {
             className={styles.container}
             onContextMenu={(e) => e.preventDefault()}
         >
-            <WaterBackground ref={waterBackgroundRef} />
+            <WaterBackground
+                ref={waterBackgroundRef}
+                style={{
+                    backgroundImage: `url("${window.constructCDNUrl("/content/background.png")}")`,
+                    backgroundSize: "cover",
+                    backgroundRepeat: "repeat"
+                }}
+            />
 
             {socket && <BrenderCanvas
                 ref={brenderCanvasRef}
                 className={styles.canvas}
-                debug={true}
-                showFPS={true}
+                debug={false}
+                showFPS={false}
             />}
 
             <div className={styles.ui}>
@@ -545,46 +547,6 @@ export default function TradingPlaza() {
                     {connected ? "Connected to Trading Plaza" : "Disconnected from Trading Plaza"}
                     <br />
                     <div style={{ color: latency < 100 ? "unset" : latency < 200 ? "yellow" : "red" }}>Ping: {latency}ms</div>
-                </div>
-            </div>
-
-            <div
-                style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 100,
-                    padding: 10,
-                    zIndex: 10,
-                    background: "rgba(0,0,0,0.35)",
-                    backdropFilter: "blur(4px)",
-                    borderRadius: 8,
-                    color: "#fff",
-                    width: 260
-                }}
-            >
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                    <input
-                        id="useSystemTime"
-                        type="checkbox"
-                        checked={useSystemTime}
-                        onChange={(e) => setUseSystemTime(e.target.checked)}
-                    />
-                    <label htmlFor="useSystemTime">system time (snapshot at open)</label>
-                </div>
-
-                <div style={{ opacity: useSystemTime ? 0.5 : 1, pointerEvents: useSystemTime ? "none" : "auto" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 4 }}>
-                        <span>fake time</span>
-                        <span>{minuteToHHMM(debugMinute)}</span>
-                    </div>
-                    <input
-                        type="range"
-                        min={0}
-                        max={1439}
-                        value={debugMinute}
-                        onChange={(e) => setDebugMinute(Number(e.target.value))}
-                        style={{ width: "100%" }}
-                    />
                 </div>
             </div>
 

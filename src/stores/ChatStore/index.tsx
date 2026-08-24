@@ -44,7 +44,10 @@ export function useChat() {
         const messages = await getMessages(r, 50).then((res) => res.data).catch(() => []);
         const userMap = new Map<string, boolean>();
 
-        for (const m of messages) userMap.set(m.authorId, true);
+        for (const m of messages) {
+            userMap.set(m.authorId, true);
+            if (m.replyingTo?.authorId) userMap.set(m.replyingTo.authorId, true);
+        }
 
         await Promise.all(Array.from(userMap.keys()).map((uid) => addCachedUser(uid)));
 

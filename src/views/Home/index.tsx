@@ -58,10 +58,10 @@ export default function Home() {
                 <div className={styles.heroSection}>
                     <div className={styles.heroContainer}>
                         {/* <img src={window.constructCDNUrl("/content/logo.png")} className={styles.heroImageM} /> */}
-                        <HeroImage src={"https://files.catbox.moe/r003j5.webm"} alt="Hero Image" mobile />
+                        <HeroImage src={window.constructCDNUrl("/content/logo.png")} alt="Blacket logo" mobile />
 
                         {/* <img src={window.constructCDNUrl("/content/logo.png")} className={styles.heroImage} /> */}
-                        <HeroImage src={"https://files.catbox.moe/r003j5.webm"} alt="Hero Image" />
+                        <HeroImage src={window.constructCDNUrl("/content/logo.png")} alt="Blacket logo" />
 
                         <div className={styles.heroCenter}>
                             <div className={styles.heroText}>
@@ -103,7 +103,7 @@ export default function Home() {
                         </div>
 
                         {/* <img src={window.constructCDNUrl("/content/logo.png")} className={styles.heroImage} /> */}
-                        <HeroImage src={"https://files.catbox.moe/r003j5.webm"} alt="Hero Image" />
+                        <HeroImage src={window.constructCDNUrl("/content/logo.png")} alt="Blacket logo" />
                     </div>
 
                     <div className={`${styles.heroArrowContainer} ${scrolled ? styles.heroArrowContainerScrolled : ""}`}>
@@ -113,15 +113,15 @@ export default function Home() {
 
                 <div className={styles.mainContent}>
                     <div className={styles.normalSection}>
-                        <Section header={"More Than a Game"} image={window.constructCDNUrl("/content/logo.png")}>
+                        <Section header={"More Than a Game"} image={window.constructCDNUrl("/content/icons/dashboardStatsMessagesSent.png")}>
                             From a real-time Trading Plaza to a dynamic Auction House, {name} goes beyond the basics—it's a full ecosystem, not just a game.
                         </Section>
 
-                        <Section header={"Constantly Updating"} image={window.constructCDNUrl("/content/logo.png")} reverse>
+                        <Section header={"Constantly Updating"} image={window.constructCDNUrl("/content/icons/dashboardStatsPacksOpened.png")} reverse>
                             With regular updates and new features, {name} is always evolving. We listen to our community and strive to make the game better every day.
                         </Section>
 
-                        <Section header={"Always Growing"} image={window.constructCDNUrl("/content/logo.png")}>
+                        <Section header={"Always Growing"} image={window.constructCDNUrl("/content/token.png")}>
                             With 50,000+ users and growing, our community is welcoming, active, and supportive.
                             From friendly staff to helpful peers, you'll always find someone to trade with, compete with, or just vibe with.
                         </Section>
@@ -158,7 +158,7 @@ export default function Home() {
                     </div>
 
                     <div className={styles.normalSection} style={{ marginTop: 100 }}>
-                        <Section header={"What Are You Waiting For?"} image={window.constructCDNUrl("/content/logo.png")}>
+                        <Section header={"What Are You Waiting For?"} image={window.constructCDNUrl("/content/diamond.png")}>
                             Join the fun and start your journey in {name} today! Register now and become part of our growing community!
                         </Section>
                     </div>

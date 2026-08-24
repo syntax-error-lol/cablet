@@ -37,7 +37,25 @@ export const PermissionTypeEnum = {
     VIEW_AUDIT: "VIEW_AUDIT"
 };
 export const RarityAnimationTypeEnum = {};
-export const SocketMessageType = {};
+export const SocketMessageType = {
+    PING: "ping",
+    PONG: "pong",
+    CHAT_MESSAGES_CREATE: "chat:messages:create",
+    CHAT_MESSAGES_UPDATE: "chat:messages:update",
+    CHAT_MESSAGES_DELETE: "chat:messages:delete",
+    CHAT_TYPING_STARTED: "chat:typing:started",
+    TRADING_PLAZA_JOIN: "trading-plaza:join",
+    TRADING_PLAZA_LEAVE: "trading-plaza:leave",
+    TRADING_PLAZA_MOVE: "trading-plaza:move",
+    LAGBACK: "lagback",
+    PURCHASE_SUCCEEDED: "purchase:succeeded",
+    AUCTIONS_BID: "auctions:bid",
+    AUCTIONS_EXPIRE: "auctions:expire",
+    FRIENDS_REMOVED: "friends:removed",
+    FRIENDS_REQUEST_DECLINED: "friends:request:declined",
+    FRIENDS_REQUEST_RECEIVED: "friends:request:received",
+    FRIENDS_REQUEST_REMOVED: "friends:request:removed"
+};
 export const Forbidden = {};
 export const experienceToLevel = (experience) => experience;
 export const levelToExperienceRemaining = (experience) => experience;

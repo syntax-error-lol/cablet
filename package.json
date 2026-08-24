@@ -38,6 +38,7 @@
         "slate": "^0.112.0",
         "slate-dom": "^0.126.0",
         "slate-react": "^0.112.1",
+        "socket.io": "^4.8.3",
         "socket.io-client": "^4.8.1",
         "terser": "^5.43.1",
         "tone": "^15.1.22",

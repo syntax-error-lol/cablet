@@ -5,7 +5,6 @@ import { useUser } from "@stores/UserStore";
 import { useLogin } from "@controllers/auth/useLogin/index";
 import { useRegister } from "@controllers/auth/useRegister/index";
 import { Button, ErrorContainer, Input, Toggle } from "@components/index";
-import { Water } from "./components";
 import styles from "./authentication.module.scss";
 
 import { AuthenticationType, AuthenticationProps } from "./authentication.d";
@@ -66,8 +65,6 @@ export default function Authentication({ type }: AuthenticationProps) {
             <div className={styles.background} style={{
                 backgroundImage: `url('${window.constructCDNUrl("/content/background.png")}')`
             }} />
-
-            <Water />
 
             <div className={styles.container}>
                 <div className={styles.leftSide}>

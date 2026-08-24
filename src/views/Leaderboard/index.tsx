@@ -42,6 +42,12 @@ export default function Leaderboard() {
                 .catch((err: Fetch2Response) => createModal(<Modal.ErrorModal onClick={() => history.back()}>{err.data.message}</Modal.ErrorModal>))
                 .finally(() => setLoading(false));
         }
+
+        const refresh = window.setInterval(() => {
+            getLeaderboard().catch(() => { });
+        }, 15_000);
+
+        return () => window.clearInterval(refresh);
     }, [leaderboard]);
 
     const switchSort = () => sortBy === PlacementType.DIAMONDS ? setSortBy(PlacementType.EXPERIENCE) : setSortBy(PlacementType.DIAMONDS);

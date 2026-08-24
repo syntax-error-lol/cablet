@@ -33,7 +33,7 @@ export default function ChatDefiner() {
     }, [messages]);
 
     const parseContent = async (content: string): Promise<string> => {
-        const matches = [...content.matchAll(/<@(\d+)>/g)];
+        const matches = [...content.matchAll(/<@([^>\s]+)>/g)];
         if (matches.length === 0) return content;
 
         const replacements = await Promise.all(
@@ -98,6 +98,10 @@ export default function ChatDefiner() {
     // };
     const onChatMessageCreate = (data: ClientMessage) => {
         if (!user) return;
+        if (data.roomId !== room) return;
+
+        void addCachedUser(data.authorId);
+        if (data.replyingTo?.authorId) void addCachedUser(data.replyingTo.authorId);
 
         addMention(data);
 
@@ -137,6 +141,7 @@ export default function ChatDefiner() {
 
     const onChatMessageUpdate = (data: ClientMessage) => {
         if (!user) return;
+        if (data.roomId !== room) return;
 
         const prev = messagesRef.current.find((m) => m.id === data.id);
         if (!prev) return;
@@ -160,6 +165,7 @@ export default function ChatDefiner() {
 
     const onChatStartTyping = (data: TypingUser) => {
         if (!user || data.userId === user.id) return;
+        if ((data as TypingUser & { roomId?: number }).roomId !== undefined && (data as TypingUser & { roomId?: number }).roomId !== room) return;
 
         addCachedUser(data.userId);
 
