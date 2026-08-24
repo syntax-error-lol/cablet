@@ -9,6 +9,8 @@ export default function StaffTools({ title, message, endpoint }: { title: string
     const canManageUsers = user?.hasPermission(PermissionTypeEnum.MANAGE_USERS) || false;
     const [items, setItems] = useState<any[]>([]);
     const [editing, setEditing] = useState<string | null>(null);
+    const [username, setUsername] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("");
     const [color, setColor] = useState("#ffffff");
     const [badges, setBadges] = useState("");
     const [tokens, setTokens] = useState(0);
@@ -37,19 +39,26 @@ export default function StaffTools({ title, message, endpoint }: { title: string
                         {endpoint === "/api/staff/users" && <>
                             <button className={styles.actions} onClick={() => {
                                 setEditing(item.id);
+                                setUsername(item.username || "");
+                                setAvatarUrl(item.avatarUrl || "");
                                 setColor(item.color || "#ffffff");
                                 setBadges((item.badges || []).map((badge: any) => badge.id).join(","));
                                 setTokens(item.tokens || 0);
                                 setDiamonds(item.diamonds || 0);
                                 setExperience(item.experience || 0);
                             }}>Edit profile</button>
-                            {editing === item.id && <div>
+                            {editing === item.id && <div className={styles.editor}>
+                                <strong>Editing {item.username}</strong>
+                                <input value={username} onChange={(event) => setUsername(event.target.value)} aria-label="Username" placeholder="Username" />
+                                <input type="url" value={avatarUrl} onChange={(event) => setAvatarUrl(event.target.value)} aria-label="Custom profile picture URL" placeholder="Custom PFP URL" />
                                 <input value={color} onChange={(event) => setColor(event.target.value)} aria-label="Name color" />
                                 <input value={badges} onChange={(event) => setBadges(event.target.value)} aria-label="Badge IDs" placeholder="Badge IDs: 1,2" />
                                 <input type="number" min="0" value={tokens} onChange={(event) => setTokens(Number(event.target.value))} aria-label="Tokens" />
                                 <input type="number" min="0" value={diamonds} onChange={(event) => setDiamonds(Number(event.target.value))} aria-label="Diamonds" />
                                 <input type="number" min="0" value={experience} onChange={(event) => setExperience(Number(event.target.value))} aria-label="Experience" />
                                 <button className={styles.actions} onClick={() => window.fetch2.patch(`/api/staff/users/${item.id}`, {
+                                    username,
+                                    avatarUrl,
                                     color,
                                     badges: badges.split(",").map((value) => Number(value.trim())).filter(Boolean),
                                     tokens,

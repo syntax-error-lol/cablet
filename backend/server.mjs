@@ -141,6 +141,7 @@ const publicUser = (user) => ({
     badges: isOwner(user) ? catalog.badges : (user.badges || []),
     blooks: user.blooks || [],
     authMethods: [],
+    avatarUrl: user.avatarUrl || "",
     color: user.color || "#ffffff",
     crystals: 0,
     createdAt: user.createdAt,
@@ -272,6 +273,20 @@ const server = createServer(async (request, response) => {
         const target = [...users.values()].find((entry) => entry.id === decodeURIComponent(path.split("/").pop()));
         if (!target) return json(response, 404, { message: "Unknown user" });
         const body = await readBody(request);
+        if (body.username !== undefined) {
+            const username = String(body.username).trim();
+            if (!/^[a-zA-Z0-9_-]+$/.test(username)) return json(response, 400, { message: "Invalid username" });
+            const existing = users.get(username.toLowerCase());
+            if (existing && existing.id !== target.id) return json(response, 409, { message: "That username is already taken." });
+            users.delete(target.username.toLowerCase());
+            target.username = username;
+            users.set(username.toLowerCase(), target);
+        }
+        if (body.avatarUrl !== undefined) {
+            const avatarUrl = String(body.avatarUrl).trim();
+            if (avatarUrl && !/^https?:\/\//i.test(avatarUrl)) return json(response, 400, { message: "Custom PFP URL must use http or https." });
+            target.avatarUrl = avatarUrl;
+        }
         if (body.color !== undefined) target.color = String(body.color);
         if (body.fontId !== undefined) target.fontId = Number(body.fontId);
         if (body.titleId !== undefined) target.titleId = Number(body.titleId);

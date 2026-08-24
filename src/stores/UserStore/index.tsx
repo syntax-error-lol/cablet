@@ -92,7 +92,9 @@ export function useUser() {
     const getUserAvatarPath = (user: PrivateUser | null): string => {
         if (!user) return window.constructCDNUrl("/content/icons/error.png");
 
-        if (user.customAvatar)
+        if (user.avatarUrl)
+            return user.avatarUrl;
+        else if (user.customAvatar)
             return `${import.meta.env.VITE_CDN_URL}/users/${user.customAvatar.userId}/${user.customAvatar.uploadId}/${user.customAvatar.filename}`;
         else if (user.avatar) {
             const blook = blooks.find((b) => b.id === user.avatar?.blookId);
