@@ -77,7 +77,7 @@ export default memo(function ChatMessage({ message, newUser, mentionsMe, isSendi
                     messageElement?.classList.add(styles.highlightedMessage);
                     setTimeout(() => messageElement?.classList.remove(styles.highlightedMessage), 1500);
                 }}>
-                    <img src={window.constructCDNUrl("/content/reply.svg")} />
+                    <img src={window.constructCDNUrl("/content/replyingToArrow.png")} />
 
                     <Blook
                         className={styles.replyingToAvatar}

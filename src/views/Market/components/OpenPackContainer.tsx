@@ -12,7 +12,6 @@ export default function OpenPackContainer({ opening, image, video, animationType
 
     const [ended, setEnded] = useState<boolean>(false);
 
-    const videoRef = useRef<HTMLVideoElement>(null);
     const endImageRef = useRef<HTMLImageElement>(null);
     const animationFrameRef = useRef<number | null>(null);
 
@@ -31,30 +30,22 @@ export default function OpenPackContainer({ opening, image, video, animationType
 
     // pack seel animation
     useEffect(() => {
-        const vid = videoRef.current;
-
         const ps = async () => {
             const sound = await getSound("pack-tear");
-            if (!sound) throw new Error("something terribly went wrong, pack-tear sound not found");
+            if (!sound) return;
 
             sound.playbackRate = 1 + (Math.random() * 0.2 - 0.1);
 
             playSound("pack-tear");
         };
 
-        if (vid) {
-            if (opening) {
-                setEnded(false);
+        if (!opening) return setEnded(false);
 
-                ps();
+        setEnded(false);
+        ps();
 
-                vid.currentTime = 0;
-                vid.play();
-            } else {
-                vid.pause();
-                vid.currentTime = 0;
-            }
-        }
+        const timeout = window.setTimeout(() => setEnded(true), 650);
+        return () => window.clearTimeout(timeout);
     }, [opening]);
 
     // pack seel fall animation
@@ -209,13 +200,11 @@ export default function OpenPackContainer({ opening, image, video, animationType
                 RarityAnimationTypeEnum.MYTHICAL
             ].includes(animationType as RarityAnimationTypeEnum) ? <>
                 <div className={styles.openPackContainer} data-opening={opening}>
-                    {!ended && <video
-                        ref={videoRef}
+                    {!ended && <img
                         className={styles.openPackTop}
-                        src={window.constructCDNUrl("/content/pack-top.webm")}
-                        controls={false}
-                        muted={true}
-                        onEnded={setEnded.bind(null, true)}
+                        src={window.constructCDNUrl("/content/pack-top-end.png")}
+                        alt="Pack opening"
+                        data-opening={opening}
                     />}
                     <img className={styles.openPackBottom} src={image} data-opening={opening} />
                 </div>

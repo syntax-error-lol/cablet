@@ -453,6 +453,17 @@
     left: 2.5px;
     width: 315px;
     z-index: 1;
+    object-fit: contain;
+
+    &[data-opening="true"] {
+        animation: packTopShake .65s ease-in-out forwards;
+    }
+
+    @keyframes packTopShake {
+        0%, 100% { transform: translateX(0) rotate(0); }
+        25% { transform: translateX(-10px) rotate(-3deg); }
+        75% { transform: translateX(10px) rotate(3deg); }
+    }
 }
 
 .openPackEndContainer {
