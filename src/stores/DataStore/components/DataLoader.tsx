@@ -26,7 +26,7 @@ export default function DataLoader({ children }: { children: ReactNode }) {
 
         window.fetch2.get("/api/data/resources")
             .then((res) => {
-                setResources(res.data);
+                setResources(Array.isArray(res.data) ? res.data : []);
                 setCompleted((c) => c + 1);
             })
             .catch(setError);
@@ -60,7 +60,7 @@ export default function DataLoader({ children }: { children: ReactNode }) {
         Promise.all(endpoints.map(([key, setter]) =>
             window.fetch2.get(`/api/data/${key}`)
                 .then((res) => {
-                    setter(res.data);
+                    setter(Array.isArray(res.data) ? res.data : []);
                     setCompleted((c) => c + 1);
                 })
                 .catch(setError)
@@ -68,13 +68,14 @@ export default function DataLoader({ children }: { children: ReactNode }) {
 
         window.fetch2.get("/api/data/fonts")
             .then(async (res) => {
-                for (const font of res.data) {
+                const fonts = Array.isArray(res.data) ? res.data : [];
+                for (const font of fonts) {
                     const fontFace = new FontFace(font.name, `url("${resourceIdToPath(font.resourceId)}")`);
                     document.fonts.add(fontFace);
                     await fontFace.load();
                 }
 
-                setFonts(res.data);
+                setFonts(fonts);
             });
 
         if (localStorage.getItem("token")) {

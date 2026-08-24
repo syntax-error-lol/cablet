@@ -327,6 +327,8 @@ const server = createServer(async (request, response) => {
 
     if (path === "/api/data/resources") return json(response, 200, catalog.resources);
 
+    if (path === "/api/stripe/stores") return json(response, 200, []);
+
     if (path === "/api/leaderboard") return json(response, 200, { diamonds: [], experience: [] });
     if (path === "/api/users/transactions") return json(response, 200, []);
 
