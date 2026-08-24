@@ -340,7 +340,7 @@ export default function Market() {
                     />
 
                     <div className={styles.openModalBackground}>
-                        <img src={resourceIdToPath(currentPack.backgroundId)} />
+                        <div className={styles.defaultOpeningBackground} />
                     </div>
 
                     {unlockedBlook && <>

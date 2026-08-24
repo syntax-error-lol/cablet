@@ -1,0 +1,16 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: calc(100vh - 90px);
+    margin: 0 1%;
+}
+
+.grid {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--primary-color);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 5px rgba(0, 0, 0, 0.1);
+}

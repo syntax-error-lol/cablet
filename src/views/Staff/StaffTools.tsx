@@ -6,20 +6,24 @@ import styles from "./staff.module.scss";
 
 export default function StaffTools({ title, message, endpoint }: { title: string; message: string; endpoint: string }) {
     const { user } = useUser();
+    const canManageUsers = user?.hasPermission(PermissionTypeEnum.MANAGE_USERS) || false;
     const [items, setItems] = useState<any[]>([]);
     const [editing, setEditing] = useState<string | null>(null);
     const [color, setColor] = useState("#ffffff");
     const [badges, setBadges] = useState("");
+    const [tokens, setTokens] = useState(0);
+    const [diamonds, setDiamonds] = useState(0);
+    const [experience, setExperience] = useState(0);
 
     useEffect(() => {
-        if (!user || !user.hasPermission(PermissionTypeEnum.VIEW_AUDIT)) return;
+        if (!user || (endpoint === "/api/staff/users" ? !canManageUsers : !user.hasPermission(PermissionTypeEnum.VIEW_AUDIT))) return;
 
         window.fetch2.get(endpoint).then((response: any) => {
             setItems(Array.isArray(response.data) ? response.data : []);
         }).catch(() => setItems([]));
-    }, [endpoint]);
+    }, [canManageUsers, endpoint, user]);
 
-    if (!user || !user.hasPermission(PermissionTypeEnum.VIEW_AUDIT)) return <Navigate to="/login" replace />;
+    if (!user || (endpoint === "/api/staff/users" ? !canManageUsers : !user.hasPermission(PermissionTypeEnum.VIEW_AUDIT))) return <Navigate to="/login" replace />;
 
     return (
         <section className={styles.section}>
@@ -35,13 +39,22 @@ export default function StaffTools({ title, message, endpoint }: { title: string
                                 setEditing(item.id);
                                 setColor(item.color || "#ffffff");
                                 setBadges((item.badges || []).map((badge: any) => badge.id).join(","));
+                                setTokens(item.tokens || 0);
+                                setDiamonds(item.diamonds || 0);
+                                setExperience(item.experience || 0);
                             }}>Edit profile</button>
                             {editing === item.id && <div>
                                 <input value={color} onChange={(event) => setColor(event.target.value)} aria-label="Name color" />
                                 <input value={badges} onChange={(event) => setBadges(event.target.value)} aria-label="Badge IDs" placeholder="Badge IDs: 1,2" />
+                                <input type="number" min="0" value={tokens} onChange={(event) => setTokens(Number(event.target.value))} aria-label="Tokens" />
+                                <input type="number" min="0" value={diamonds} onChange={(event) => setDiamonds(Number(event.target.value))} aria-label="Diamonds" />
+                                <input type="number" min="0" value={experience} onChange={(event) => setExperience(Number(event.target.value))} aria-label="Experience" />
                                 <button className={styles.actions} onClick={() => window.fetch2.patch(`/api/staff/users/${item.id}`, {
                                     color,
-                                    badges: badges.split(",").map((value) => Number(value.trim())).filter(Boolean)
+                                    badges: badges.split(",").map((value) => Number(value.trim())).filter(Boolean),
+                                    tokens,
+                                    diamonds,
+                                    experience
                                 }).then((response: any) => setItems((current) => current.map((entry) => entry.id === item.id ? response.data : entry))).finally(() => setEditing(null))}>Save</button>
                             </div>}
                         </>}

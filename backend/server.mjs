@@ -23,6 +23,7 @@ const staffPermissions = [
     "LESS_AUCTION_TAX",
     "MANAGE_MESSAGES",
     "MANAGE_REPORTS",
+    "MANAGE_USERS",
     "MUTE_USERS",
     "UPLOAD_FILES_LARGE",
     "UPLOAD_FILES_MEDIUM",
@@ -274,6 +275,13 @@ const server = createServer(async (request, response) => {
         if (body.color !== undefined) target.color = String(body.color);
         if (body.fontId !== undefined) target.fontId = Number(body.fontId);
         if (body.titleId !== undefined) target.titleId = Number(body.titleId);
+        for (const field of ["tokens", "diamonds", "experience"]) {
+            if (body[field] !== undefined) {
+                const value = Number(body[field]);
+                if (!Number.isSafeInteger(value) || value < 0) return json(response, 400, { message: `${field} must be a non-negative integer.` });
+                target[field] = value;
+            }
+        }
         if (Array.isArray(body.badges)) target.badges = body.badges.map((id) => catalog.badges.find((badge) => badge.id === Number(id))).filter(Boolean);
         saveUsers();
         return json(response, 200, publicUser(target));

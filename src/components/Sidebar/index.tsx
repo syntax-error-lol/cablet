@@ -49,6 +49,11 @@ const PAGES: { left: Page[]; bottom: Page[] } = {
             link: "/inventory"
         },
         {
+            icon: "fas fa-paw",
+            text: "Blooks",
+            link: "/blooks"
+        },
+        {
             icon: "fas fa-building-columns",
             text: "Auction House",
             link: "/auction-house",
@@ -104,7 +109,7 @@ const STAFF_PAGES: Page[] = [
         icon: "fas fa-user-gear",
         text: "User Manager",
         link: "/staff/users",
-        permission: PermissionTypeEnum.MUTE_USERS,
+        permission: PermissionTypeEnum.MANAGE_USERS,
         textSizeOverride: 18
     },
     {
