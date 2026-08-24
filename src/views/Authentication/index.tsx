@@ -64,7 +64,7 @@ export default function Authentication({ type }: AuthenticationProps) {
     return (
         <>
             <div className={styles.background} style={{
-                backgroundImage: `url('${window.constructCDNUrl("/content/auth-background.png")}')`
+                backgroundImage: `url('${window.constructCDNUrl("/content/background.png")}')`
             }} />
 
             <Water />

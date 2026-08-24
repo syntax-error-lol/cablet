@@ -45,10 +45,10 @@ const catalog = {
     badges: [{ id: 1, name: "Owner", imageId: 3, priority: 0 }],
     banners: [{ id: 1, name: "Default Banner", imageId: 2 }],
     blooks: [
-        { id: 1, name: "Default Blook", imageId: 1, rarityId: 1, description: "A local starter blook.", isBig: false },
-        { id: 2, name: "Information Blook", imageId: 5, rarityId: 1, description: "A helpful common blook.", isBig: false },
-        { id: 3, name: "Console Blook", imageId: 6, rarityId: 2, description: "A rare console blook.", isBig: false },
-        { id: 4, name: "Warning Blook", imageId: 7, rarityId: 3, description: "An epic warning blook.", isBig: false }
+        { id: 1, name: "Default Blook", imageId: 1, rarityId: 1, price: 5, description: "A local starter blook.", isBig: false },
+        { id: 2, name: "Information Blook", imageId: 5, rarityId: 1, price: 10, description: "A helpful common blook.", isBig: false },
+        { id: 3, name: "Console Blook", imageId: 6, rarityId: 2, price: 25, description: "A rare console blook.", isBig: false },
+        { id: 4, name: "Warning Blook", imageId: 7, rarityId: 3, price: 50, description: "An epic warning blook.", isBig: false }
     ],
     emojis: [],
     fonts: [],
@@ -66,8 +66,8 @@ const catalog = {
     ],
     titles: [],
     products: [],
-    "spinny-wheels": []
-    ,boosters: {
+    "spinny-wheels": [],
+    boosters: {
         global: { chance: null, shiny: null },
         personal: { chance: null, shiny: null }
     }
@@ -138,10 +138,10 @@ const publicUser = (user) => ({
     fontId: 0,
     paymentMethods: [],
     titleId: 0,
-    settings: { lowPerformanceMode: false, friendRequests: "ON" },
-    statistics: { packsOpened: 0, messagesSent: 0 },
+    settings: { lowPerformanceMode: false, friendRequests: "ON", ...(user.settings || {}) },
+    statistics: { packsOpened: 0, messagesSent: 0, ...(user.statistics || {}) },
     tokens: user.tokens ?? (isOwner(user) ? 10000 : 0),
-    diamonds: 0,
+    diamonds: user.diamonds || 0,
     experience: user.experience || 0
 });
 
@@ -204,7 +204,12 @@ const server = createServer(async (request, response) => {
         if (users.has(username.toLowerCase())) return json(response, 409, { message: "That username is already taken." });
 
         const passwordSalt = randomUUID();
-        const user = { id: randomUUID(), username, createdAt: new Date().toISOString(), passwordSalt, passwordHash: hashPassword(password, passwordSalt), permissions: [], badges: [] };
+        const user = {
+            id: randomUUID(), username, createdAt: new Date().toISOString(), passwordSalt,
+            passwordHash: hashPassword(password, passwordSalt), permissions: [], badges: [],
+            settings: { lowPerformanceMode: false, friendRequests: "ON", openPacksInstantly: false },
+            statistics: { packsOpened: 0, messagesSent: 0 }, blooks: [], tokens: 0, diamonds: 0, experience: 0
+        };
         users.set(username.toLowerCase(), user);
         saveUsers();
         const token = randomUUID();
@@ -230,6 +235,72 @@ const server = createServer(async (request, response) => {
     if (path === "/api/users/me") {
         const user = currentUser(request);
         return user ? json(response, 200, publicUser(user)) : json(response, 401, { message: "Not authenticated" });
+    }
+
+    if (path.startsWith("/api/users/") && request.method === "GET") {
+        const username = decodeURIComponent(path.slice("/api/users/".length)).toLowerCase();
+        const user = users.get(username);
+        return user ? json(response, 200, publicUser(user)) : json(response, 404, { message: "Unknown user" });
+    }
+
+    if (path === "/api/settings" && request.method === "PATCH") {
+        const user = currentUser(request);
+        const body = await readBody(request);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        user.settings = { ...(user.settings || {}), [String(body.key)]: body.value };
+        saveUsers();
+        return json(response, 200, {});
+    }
+
+    if (path === "/api/settings/username" && request.method === "PATCH") {
+        const user = currentUser(request);
+        const body = await readBody(request);
+        const newUsername = String(body.newUsername || "").trim();
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        if (!/^[a-zA-Z0-9_-]+$/.test(newUsername)) return json(response, 400, { message: "Invalid username" });
+        if (users.has(newUsername.toLowerCase())) return json(response, 409, { message: "That username is already taken." });
+        users.delete(user.username.toLowerCase());
+        user.username = newUsername;
+        users.set(newUsername.toLowerCase(), user);
+        saveUsers();
+        return json(response, 200, {});
+    }
+
+    if (path === "/api/quests/claim-daily-tokens" && request.method === "PUT") {
+        const user = currentUser(request);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        const today = new Date().toISOString().slice(0, 10);
+        if (user.lastClaimed === today) return json(response, 409, { message: "Daily tokens already claimed." });
+        user.lastClaimed = today;
+        user.tokens = (user.tokens || 0) + 100;
+        saveUsers();
+        return json(response, 200, { tokens: 100 });
+    }
+
+    if (path === "/api/blooks/sell-blooks" && request.method === "PUT") {
+        const user = currentUser(request);
+        const body = await readBody(request);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        const ids = Array.isArray(body.blooks) ? body.blooks : [];
+        const sold = (user.blooks || []).filter((entry) => ids.includes(entry.id));
+        const value = sold.reduce((total, entry) => total + (catalog.blooks.find((blook) => blook.id === entry.blookId)?.price || 0), 0);
+        user.blooks = (user.blooks || []).filter((entry) => !ids.includes(entry.id));
+        user.diamonds = (user.diamonds || 0) + value;
+        saveUsers();
+        return json(response, 200, {});
+    }
+
+    if (path.startsWith("/api/cosmetics/") && (request.method === "PATCH" || request.method === "POST")) {
+        const user = currentUser(request);
+        const body = await readBody(request);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        if (path.includes("/color/")) user.color = body.color;
+        if (path === "/api/cosmetics/font") user.fontId = body.fontId;
+        if (path === "/api/cosmetics/title") user.titleId = body.titleId;
+        if (path === "/api/cosmetics/avatar") user.avatarId = body.avatarId;
+        if (path === "/api/cosmetics/banner") user.bannerId = body.bannerId;
+        saveUsers();
+        return json(response, 200, {});
     }
 
     if (path === "/api/market/open-pack" && request.method === "POST") {
