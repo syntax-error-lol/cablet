@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useUser } from "@stores/UserStore/index";
 import { useData } from "@stores/DataStore/index";
+import { useResource } from "@stores/ResourceStore/index";
 import { GenericButton } from "@components/Buttons";
 import styles from "./staff.module.scss";
 
@@ -8,7 +9,8 @@ import { PermissionTypeEnum } from "@blacket/types";
 
 export default function StaffPanel() {
     const { user } = useUser();
-    const { blooks, items, packs, banners, badges, resources } = useData();
+    const { blooks, items, packs, banners, badges } = useData();
+    const { resources } = useResource();
     if (!user || !user.hasPermission(PermissionTypeEnum.VIEW_AUDIT)) return <Navigate to="/login" />;
 
     return (
