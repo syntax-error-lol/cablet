@@ -11,14 +11,14 @@ declare global {
         aliases?: string[],
         component: JSX.Element,
         title: string,
-        description: string,
-        background: boolean,
-        header: HeaderProps,
-        sidebar: boolean,
-        topRight: string[TopRightContent],
-        topRightDesktopOnly: boolean,
-        dontUseBody: boolean,
-        pageHeader: string
+        description?: string,
+        background?: boolean,
+        header?: HeaderProps,
+        sidebar?: boolean,
+        topRight?: string[TopRightContent],
+        topRightDesktopOnly?: boolean,
+        dontUseBody?: boolean,
+        pageHeader?: string
     }
 
     interface Fetch2Response {

@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode } from "react";
+import { HTMLAttributes, KeyboardEventHandler, ReactNode } from "react";
 import { ClientMessage } from "@stores/ChatStore/chatStore";
 import { PublicUser } from "@blacket/types";
 
@@ -28,9 +28,11 @@ export interface AreYouSureLinkModalProps {
 
 export interface MarkdownEditorProps extends HTMLAttributes<HTMLDivElement> {
     content?: ReactNode;
+    placeholder?: string;
     color?: string;
     readOnly?: boolean;
     getEditor?: (editor: any) => void;
+    onKeyDown?: KeyboardEventHandler<HTMLDivElement>;
 }
 
 export interface ElementProps {

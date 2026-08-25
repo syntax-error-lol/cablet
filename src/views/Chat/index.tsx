@@ -17,7 +17,6 @@ import { PermissionTypeEnum } from "@blacket/types";
 
 export default memo(function Chat() {
     const { user } = useUser();
-    if (!user) return <Navigate to="/login" />;
 
     const { messages, replyingTo, setReplyingTo, editing, setEditing, resetMentions } = useChat();
     // const { openContextMenu } = useContextMenu();
@@ -34,6 +33,8 @@ export default memo(function Chat() {
 
         setEditing(null);
     }, []);
+
+    if (!user) return <Navigate to="/login" />;
 
     const memoizedMessages = useMemo(() => messages, [messages.length, messages.map((m) => m.id).join(",")]);
 

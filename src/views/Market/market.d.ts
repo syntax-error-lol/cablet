@@ -27,14 +27,15 @@ export interface PackProps extends HTMLAttributes<HTMLDivElement> {
     ambienceEnabled?: boolean;
 }
 
-export interface ItemProps extends HTMLAttributes<HTMLDivElement> {
+export interface ItemProps extends Omit<HTMLAttributes<HTMLDivElement>, "onClick"> {
     itemShop: ItemShop;
+    onClick?: () => void;
 }
 
 export interface OpenPackModalProps {
     pack: Pack;
     userTokens: number;
-    onYesButton: (dto: MarketOpenPackDto) => Promise;
+    onYesButton: (dto: MarketOpenPackDto) => Promise<void>;
 }
 
 export interface OpenPackContainerProps {

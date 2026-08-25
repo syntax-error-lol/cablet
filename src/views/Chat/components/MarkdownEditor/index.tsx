@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Twemoji from "react-twemoji";
 import { Editor, Node, Transforms, Range, createEditor } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
@@ -39,7 +39,9 @@ export default function MarkdownEditor({ content, color, readOnly, getEditor = (
 
     const editor = useMemo(() => withCustomElement(withReact(createEditor())), []);
 
-    getEditor(editor);
+    useEffect(() => {
+        getEditor(editor);
+    }, [editor, getEditor]);
 
     const initialValue = content
         ? content.toString().split("\n").map((text: string) => ({ type: "paragraph" as const, children: [{ text }] }))
@@ -72,9 +74,7 @@ export default function MarkdownEditor({ content, color, readOnly, getEditor = (
 
             // i know this is a shit workaround but it works, you can clean it up and do this better if you want
             const getPointAtGlobalOffset = (
-                // @ts-expect-error
                 editor,
-                // @ts-expect-error
                 globalOffset
             ) => {
                 let currentOffset = 0;

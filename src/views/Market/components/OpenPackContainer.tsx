@@ -4,7 +4,7 @@ import { useInsanePull } from "@stores/InsanePullStore/index";
 import styles from "../market.module.scss";
 
 import { OpenPackContainerProps } from "../market.d";
-import { RarityAnimationTypeEnum } from "@blacket/types";
+import { RarityAnimationType, RarityAnimationTypeEnum } from "@blacket/types";
 
 export default function OpenPackContainer({ opening, image, video, animationType }: OpenPackContainerProps) {
     const { defineSounds, getSound, playSound, playSounds } = useSound();
@@ -122,7 +122,7 @@ export default function OpenPackContainer({ opening, image, video, animationType
             }
             return;
         }
-        if (![RarityAnimationTypeEnum.CHROMA, RarityAnimationTypeEnum.MYTHICAL].includes(animationType as RarityAnimationTypeEnum)) return;
+        if (![RarityAnimationTypeEnum.CHROMA, RarityAnimationTypeEnum.MYTHICAL].includes(animationType as RarityAnimationType)) return;
         const isMythical = animationType === RarityAnimationTypeEnum.MYTHICAL;
 
         const img = chromaImageRef.current;
@@ -219,7 +219,7 @@ export default function OpenPackContainer({ opening, image, video, animationType
             {![
                 RarityAnimationTypeEnum.CHROMA,
                 RarityAnimationTypeEnum.MYTHICAL
-            ].includes(animationType as RarityAnimationTypeEnum) ? <>
+            ].includes(animationType as RarityAnimationType) ? <>
                 <div className={styles.openPackContainer} data-opening={opening}>
                     {!ended && <img
                         className={styles.openPackTop}

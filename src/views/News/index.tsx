@@ -4,19 +4,27 @@ import { useUser } from "@stores/UserStore/index";
 import { Post } from "./components";
 import styles from "./news.module.scss";
 
-import { NewsNewsPostEntity } from "@blacket/types";
+interface NewsPost {
+    id: string;
+    title: string;
+    content: string;
+    image?: string;
+    createdAt: string;
+    author: any;
+    votes: { upvotes: number; downvotes: number };
+}
 
 export default function News() {
-    const [news, setNews] = useState<NewsNewsPostEntity[]>([]);
+    const [news, setNews] = useState<NewsPost[]>([]);
 
     const { user } = useUser();
-
-    if (!user) return <Navigate to="/login" />;
 
     useEffect(() => {
         window.fetch2.get("/api/news")
             .then((res) => setNews(res.data));
     }, []);
+
+    if (!user) return <Navigate to="/login" />;
 
     return (
         <>

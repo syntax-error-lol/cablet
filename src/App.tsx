@@ -16,7 +16,7 @@ const router = createBrowserRouter([{
 
         <Outlet />
     </Wrapper>,
-    children: Object.values(routes).flatMap((route: BlacketRoute) => useCreateRoute(route))
+    children: Object.values(routes).flatMap((route) => useCreateRoute(route as BlacketRoute))
 }]);
 
 export default function App() {

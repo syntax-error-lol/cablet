@@ -79,6 +79,7 @@ export declare const levelToExperienceRemaining: (experience: number) => number;
 
 export declare const NotFound: {
     UNKNOWN_USER: string;
+    DEFAULT: string;
 };
 
 export declare const AuctionTypeEnum: {

@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { KeyboardEvent, memo, useState } from "react";
 import { Editor, Node, Transforms } from "slate";
 import { useUser } from "@stores/UserStore/index";
 import { useChat } from "@stores/ChatStore/index";
@@ -74,7 +74,7 @@ export default memo(function InputContainer({ placeholder }: InputContainerProps
         }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
         if (e.repeat) return;
 
         switch (e.key) {

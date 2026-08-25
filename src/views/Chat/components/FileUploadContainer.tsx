@@ -19,7 +19,7 @@ export default function FileUploadContainer() {
     const onFileChange = async (event: Event) => {
         const files = (event.target as HTMLInputElement).files;
 
-        const uploadedFiles = [];
+        const uploadedFiles: Fetch2Response[] = [];
 
         if (files && files.length > 0) {
             // TODO: allow multiple files after rewrite is released

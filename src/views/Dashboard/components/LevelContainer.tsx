@@ -6,7 +6,7 @@ import { experienceToLevel, levelToExperienceRemaining } from "@blacket/types";
 export default function LevelContainer({ experience }: LevelContainerProps) {
     const level = experienceToLevel(experience);
 
-    const experienceRemaining = levelToExperienceRemaining(level, experience);
+    const experienceRemaining = levelToExperienceRemaining(experience);
 
     return (
         <div className={styles.levelBarContainer}>

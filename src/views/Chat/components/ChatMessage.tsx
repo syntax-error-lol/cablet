@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Twemoji from "react-twemoji";
 import { Editor, Transforms } from "slate";
@@ -35,7 +35,7 @@ export default memo(function ChatMessage({ message, newUser, mentionsMe, isSendi
         message.replyingTo?.content
     ]);
 
-    useMemo(() => {
+    useEffect(() => {
         if (editor) {
             const point = Editor.end(editor, []);
             Transforms.select(editor, point);
@@ -137,6 +137,9 @@ export default memo(function ChatMessage({ message, newUser, mentionsMe, isSendi
                             <Username user={author} onClick={(e) => {
                                 if (window.innerWidth <= 850) e.preventDefault();
                             }} />
+                            {author.guild?.name && <Link to="/guilds" className={styles.messageGuild} title="Clan">
+                                <i className="fas fa-shield-alt" /> {author.guild.name}
+                            </Link>}
 
                             <div className={styles.messageBigTimestamp}>
                                 {timestamps(message.createdAt.toString())}

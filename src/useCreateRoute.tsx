@@ -15,7 +15,7 @@ export default function useCreateRoute(route: BlacketRoute) {
         {route.header && <Header {...route.header} />}
         {route.sidebar && <Sidebar />}
 
-        {route.topRight && <TopRight content={route.topRight} desktopOnly={route.topRightDesktopOnly} />}
+        {route.topRight && <TopRight content={route.topRight} desktopOnly={route.topRightDesktopOnly ?? false} />}
 
         {route.header ? !route.dontUseBody ? <HeaderBody>
             {route.component}

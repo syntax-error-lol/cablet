@@ -1,6 +1,6 @@
 import { S3UploadEntity, Upload } from "@blacket/types";
 
-interface Response extends Fetch2Response {
+interface UploadResponse extends Fetch2Response {
     data: Upload
 }
 
@@ -37,7 +37,7 @@ enum UploadType {
 // };
 
 
-const genericUpload = (file: File, type: UploadType) => new Promise<Response>((resolve, reject) => window.fetch2.get(`/api/s3/upload/${type}?filename=${file.name}&mimetype=${file.type}`)
+const genericUpload = (file: File, type: UploadType) => new Promise<UploadResponse>((resolve, reject) => window.fetch2.get(`/api/s3/upload/${type}?filename=${file.name}&mimetype=${file.type}`)
     .then(async (res: Fetch2Response & { data: S3UploadEntity }) => {
         const formData = new FormData();
         Object.entries(res.data.fields).forEach(([k, v]) => formData.append(k, v as string));
@@ -64,22 +64,22 @@ const genericUpload = (file: File, type: UploadType) => new Promise<Response>((r
     }));
 
 export function useUpload() {
-    const uploadFileSmall = (file: File) => new Promise<Response>((resolve, reject) => {
+    const uploadFileSmall = (file: File) => new Promise<UploadResponse>((resolve, reject) => {
         genericUpload(file, UploadType.SMALL)
-            .then((res: Response) => resolve(res))
+            .then((res: UploadResponse) => resolve(res))
             .catch(reject);
     });
 
 
-    const uploadFileMedium = (file: File) => new Promise<Response>((resolve, reject) => {
+    const uploadFileMedium = (file: File) => new Promise<UploadResponse>((resolve, reject) => {
         genericUpload(file, UploadType.MEDIUM)
-            .then((res: Response) => resolve(res))
+            .then((res: UploadResponse) => resolve(res))
             .catch(reject);
     });
 
-    const uploadFileLarge = (file: File) => new Promise<Response>((resolve, reject) => {
+    const uploadFileLarge = (file: File) => new Promise<UploadResponse>((resolve, reject) => {
         genericUpload(file, UploadType.LARGE)
-            .then((res: Response) => resolve(res))
+            .then((res: UploadResponse) => resolve(res))
             .catch(reject);
     });
 

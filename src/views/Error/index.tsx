@@ -8,9 +8,9 @@ import { ErrorCode, ErrorProps } from "./error.d";
 
 export default function Error({ code, reason }: ErrorProps) {
     const routeError: unknown = useRouteError();
-    const error = routeError instanceof globalThis.Error
-        ? routeError
-        : new globalThis.Error(typeof routeError === "string" ? routeError : "Unknown route error");
+    const error = typeof routeError === "object" && routeError !== null
+        ? routeError as { message?: string; stack?: string }
+        : { message: typeof routeError === "string" ? routeError : "Unknown route error", stack: "" };
 
     let reasonText = "breaking rules";
     let reasonEndTime = `at ${new Date()}`;

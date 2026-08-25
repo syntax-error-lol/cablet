@@ -15,7 +15,7 @@ import type { ParticleCanvasRef } from "@components/ParticleCanvas/particleCanva
 import { OpenPackModal, Category, Pack, OpenPackContainer, OpenPackBlook, Item, BoosterContainer } from "./components";
 import styles from "./market.module.scss";
 
-import { DataBoostersEntity, MarketOpenPackDto, Pack as PackType, RarityAnimationTypeEnum, UserBlook } from "@blacket/types";
+import { DataBoostersEntity, MarketOpenPackDto, Pack as PackType, RarityAnimationType, RarityAnimationTypeEnum, UserBlook } from "@blacket/types";
 import { BigButtonClickType, LittleButton, SearchOptions } from "./market.d";
 
 // TODO: can't hear so i will see if this is right
@@ -27,8 +27,6 @@ export default function Market() {
     const { resourceIdToPath } = useResource();
     const { playSound, stopSounds, defineSounds, setVolume, getSound } = useSound();
     const { packs, rarities, blooks, itemShop } = useData();
-
-    if (!user) return <Navigate to="/login" />;
 
     const { changeSetting } = useSettings();
     const { openPack } = useOpenPack();
@@ -44,7 +42,7 @@ export default function Market() {
     const particleCanvasRef = useRef<ParticleCanvasRef>(null);
     const spotlightDimmerRef = useRef<HTMLDivElement>(null);
 
-    const playRaritySound = async (r: RarityAnimationTypeEnum) => {
+    const playRaritySound = async (r: RarityAnimationType) => {
         if (!user.settings) return;
 
         let sound = "";
@@ -140,7 +138,7 @@ export default function Market() {
                     let waitTime = 700;
 
                     setTimeout(() => {
-                        playRaritySound(rarity.animationType as RarityAnimationTypeEnum);
+                        playRaritySound(rarity.animationType as RarityAnimationType);
                     }, 500);
 
                     let particleDelay = 0;
@@ -227,6 +225,8 @@ export default function Market() {
             particleCanvasRef.current?.stop();
         };
     }, []);
+
+    if (!user) return <Navigate to="/login" />;
 
     const LITTLE_BUTTONS: LittleButton[] = [
         {

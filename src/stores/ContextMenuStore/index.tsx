@@ -9,7 +9,7 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number): T 
     let timeout: NodeJS.Timeout;
     return ((...args: any[]) => {
         clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
+        timeout = setTimeout(() => func(...args), wait);
     }) as T;
 }
 
@@ -18,7 +18,7 @@ function throttle<T extends (...args: any[]) => void>(func: T, limit: number): T
     let inThrottle: boolean;
     return ((...args: any[]) => {
         if (!inThrottle) {
-            func.apply(this, args);
+            func(...args);
             inThrottle = true;
             setTimeout(() => inThrottle = false, limit);
         }
@@ -81,6 +81,7 @@ export const useContextMenu = create<ContextMenuStore>()(
             visible: false,
             setVisible,
             contextMenuRef,
+            render: () => null,
             cursorPosition: { x: 0, y: 0 }
         };
     })
