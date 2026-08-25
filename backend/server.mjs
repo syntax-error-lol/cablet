@@ -63,21 +63,17 @@ const catalog = {
         { id: 4, name: "Ocean", imageId: 14 }
     ],
     blooks: [
-        { id: 1, name: "Default Blook", imageId: 1, rarityId: 1, price: 5, description: "A local starter blook.", isBig: false },
-        { id: 2, name: "Information Blook", imageId: 5, rarityId: 1, price: 10, description: "A helpful common blook.", isBig: false },
-        { id: 3, name: "Console Blook", imageId: 6, rarityId: 2, price: 25, description: "A rare console blook.", isBig: false },
-        { id: 4, name: "Warning Blook", imageId: 7, rarityId: 3, price: 50, description: "An epic warning blook.", isBig: false }
+        { id: 1, name: "Lil Bot", imageId: 1, rarityId: 1, packId: 1, chance: 19.5, price: 5, description: "A friendly little bot.", isBig: false },
+        { id: 2, name: "Lovely Bot", imageId: 5, rarityId: 1, packId: 1, chance: 19.5, price: 10, description: "A bot with a kind heart.", isBig: false },
+        { id: 3, name: "Angry Bot", imageId: 6, rarityId: 1, packId: 1, chance: 19.5, price: 25, description: "A bot having a rough day.", isBig: false },
+        { id: 4, name: "Happy Bot", imageId: 7, rarityId: 2, packId: 1, chance: 19.5, price: 50, description: "A bot that is always smiling.", isBig: false }
     ],
     emojis: [],
     fonts: [],
     items: [{ id: 1, name: "Lucky Charm", imageId: 10, rarityId: 1, description: "A small charm that makes every win feel better." }],
     "item-shop": [{ id: 1, type: "ITEM", itemId: 1, price: 75, weekly: false }],
     packs: [
-        { id: 1, name: "Starter Pack", imageId: 1, backgroundId: 4, price: 0, rarityIds: [1, 2], enabled: true },
-        { id: 2, name: "Debug Pack", imageId: 8, backgroundId: 4, price: 25, rarityIds: [1, 2, 3], enabled: true },
-        { id: 3, name: "Mystery Pack", imageId: 9, backgroundId: 4, price: 100, rarityIds: [2, 3], enabled: true },
-        { id: 4, name: "Treasure Pack", imageId: 8, backgroundId: 4, price: 250, rarityIds: [1, 2, 3], enabled: true },
-        { id: 5, name: "Midnight Pack", imageId: 9, backgroundId: 4, price: 500, rarityIds: [2, 3], enabled: true }
+        { id: 1, name: "Bot Pack", imageId: 9, backgroundId: 4, price: 25, rarityIds: [1, 2], enabled: true }
     ],
     rarities: [
         { id: 1, name: "Common", color: "#7f8c8d", animationType: "COMMON" },
@@ -85,7 +81,7 @@ const catalog = {
         { id: 3, name: "Epic", color: "#9b59b6", animationType: "EPIC" }
     ],
     titles: [],
-    products: [{ id: 1, name: "Blacket Plus", description: "Support the rewrite and unlock a Plus profile badge.", imageId: 3, price: 4.99, subscriptionPrice: 4.99, isSubscription: true, isQuantityCapped: true, local: true, color1: "#0d9488", color2: "#164e63" }],
+    products: [{ id: 1, name: "Blacket Plus", description: "Free Plus access for everyone.", imageId: 3, price: 0, subscriptionPrice: 0, isSubscription: true, isQuantityCapped: true, local: true, color1: "#0d9488", color2: "#164e63" }],
     stores: [{ id: 1, name: "Memberships", description: "Make your profile feel like yours.", priority: 0, products: [1] }],
     "spinny-wheels": [],
     boosters: {
@@ -175,7 +171,7 @@ const publicUser = (user) => ({
     tokens: user.tokens ?? (isOwner(user) ? 10000 : 0),
     diamonds: user.diamonds || 0,
     experience: user.experience || 0,
-    plusUntil: user.plusUntil || null
+    plusUntil: "9999-12-31T23:59:59.999Z"
 });
 
 const currentUser = (request) => {
@@ -249,7 +245,8 @@ const server = createServer(async (request, response) => {
             id: randomUUID(), username, createdAt: new Date().toISOString(), passwordSalt,
             passwordHash: hashPassword(password, passwordSalt), permissions: [], badges: [],
             settings: { lowPerformanceMode: false, friendRequests: "ON", openPacksInstantly: false },
-            statistics: { packsOpened: 0, messagesSent: 0 }, blooks: [], items: [], tokens: 250, diamonds: 0, experience: 0
+            statistics: { packsOpened: 0, messagesSent: 0 }, blooks: [], items: [], tokens: 250, diamonds: 0, experience: 0,
+            plusUntil: "9999-12-31T23:59:59.999Z"
         };
         users.set(username.toLowerCase(), user);
         saveUsers();
@@ -491,7 +488,14 @@ const server = createServer(async (request, response) => {
         if (!pack || !pack.enabled) return json(response, 404, { message: "Unknown pack" });
         if (!isOwner(user) && (user.tokens || 0) < pack.price) return json(response, 403, { message: "Not enough tokens" });
 
-        const blook = catalog.blooks[Math.floor(Math.random() * catalog.blooks.length)];
+        const packBlooks = catalog.blooks.filter((entry) => entry.packId === pack.id);
+        if (!packBlooks.length) return json(response, 404, { message: "Pack has no blooks" });
+        const totalChance = packBlooks.reduce((total, entry) => total + (entry.chance || 0), 0);
+        let randomChance = Math.random() * totalChance;
+        const blook = packBlooks.find((entry) => {
+            randomChance -= entry.chance || 0;
+            return randomChance <= 0;
+        }) || packBlooks[packBlooks.length - 1];
         const userBlook = {
             id: randomUUID(),
             blookId: blook.id,
