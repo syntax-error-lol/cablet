@@ -12,7 +12,7 @@ export default function Blooks() {
 
     return (
         <>
-            {window.innerWidth > 768 && <PageHeader>Blooks</PageHeader>}
+            {window.innerWidth > 768 && <PageHeader>Inventory</PageHeader>}
             <main className={styles.page}>
                 <SearchBox
                     noPadding={true}

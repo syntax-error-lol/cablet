@@ -48,18 +48,23 @@ const catalog = {
         { id: 9, path: "/content/packs/Miscellaneous.png" },
         { id: 10, path: "/content/shield.png" },
         { id: 11, path: "/content/levelStar.png" },
-        { id: 15, path: "/content/blooks/Bot-Lil.svg" },
-        { id: 16, path: "/content/blooks/Bot-Lovely.svg" },
-        { id: 17, path: "/content/blooks/Bot-Angry.svg" },
-        { id: 18, path: "/content/blooks/Bot-Happy.svg" },
-        { id: 19, path: "/content/packs/Bot.svg" }
+        { id: 15, path: "https://blacket.org/content/blooks/Lil%20Bot.webp" },
+        { id: 16, path: "https://blacket.org/content/blooks/Lovely%20Bot.webp" },
+        { id: 17, path: "https://blacket.org/content/blooks/Angry%20Bot.webp" },
+        { id: 18, path: "https://blacket.org/content/blooks/Happy%20Bot.webp" },
+        { id: 19, path: "https://blacket.org/content/packs/Bot.webp" },
+        { id: 20, path: "/content/badges/Owner.webp" },
+        { id: 21, path: "/content/badges/Staff.webp" },
+        { id: 22, path: "/content/badges/Developer.webp" },
+        { id: 23, path: "/content/badges/Verified.webp" },
+        { id: 24, path: "/content/badges/Partner.webp" }
     ],
     badges: [
-        { id: 1, name: "Owner", imageId: 3, priority: 0 },
-        { id: 2, name: "Staff", imageId: 10, priority: 1 },
-        { id: 3, name: "Founder", imageId: 11, priority: 2 },
-        { id: 4, name: "Early Supporter", imageId: 10, priority: 3 },
-        { id: 5, name: "Collector", imageId: 11, priority: 4 }
+        { id: 1, name: "Owner", imageId: 20, priority: 0 },
+        { id: 2, name: "Staff", imageId: 21, priority: 1 },
+        { id: 3, name: "Developer", imageId: 22, priority: 2 },
+        { id: 4, name: "Verified", imageId: 23, priority: 3 },
+        { id: 5, name: "Partner", imageId: 24, priority: 4 }
     ],
     banners: [
         { id: 1, name: "Default Banner", imageId: 2 },
@@ -96,12 +101,18 @@ const catalog = {
 };
 
 const dataPath = process.env.LOCAL_DATA_FILE || fileURLToPath(new URL("./local-data.json", import.meta.url));
+const normalizeBadges = (badges) => (Array.isArray(badges) ? badges : [])
+    .map((badge) => catalog.badges.find((currentBadge) => currentBadge.id === Number(typeof badge === "object" ? badge.id : badge)))
+    .filter(Boolean);
 const loadUsers = () => {
     if (!existsSync(dataPath)) return new Map();
 
     try {
         const data = JSON.parse(readFileSync(dataPath, "utf8"));
-        return new Map((data.users || []).map((user) => [user.username.toLowerCase(), user]));
+        return new Map((data.users || []).map((user) => [
+            user.username.toLowerCase(),
+            { ...user, badges: normalizeBadges(user.badges) }
+        ]));
     } catch {
         console.warn(`Could not read local data file at ${dataPath}; starting with an empty user store.`);
         return new Map();

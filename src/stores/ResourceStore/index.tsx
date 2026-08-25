@@ -10,6 +10,9 @@ export const useResource = create<ResourceStore>((set, get) => ({
     resourceIdToPath: (id) => {
         const resource = get().resources.find((r) => r.id === id);
 
-        return resource ? resource.path.replace("{cdn}", window.constructCDNUrl("")) : window.errorImage;
+        if (!resource) return window.errorImage;
+        if (/^https?:\/\//.test(resource.path)) return resource.path;
+
+        return resource.path.replace("{cdn}", window.constructCDNUrl(""));
     }
 }));

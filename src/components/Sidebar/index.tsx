@@ -45,12 +45,12 @@ const PAGES: { left: Page[]; bottom: Page[] } = {
         },
         {
             icon: "fas fa-box-open",
-            text: "Inventory",
+            text: "Blooks",
             link: "/inventory"
         },
         {
             icon: "fas fa-paw",
-            text: "Blooks",
+            text: "Inventory",
             link: "/blooks"
         },
         {

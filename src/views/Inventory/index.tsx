@@ -73,7 +73,7 @@ export default function Inventory() {
 
     return (
         <>
-            {window.innerWidth > 768 && <PageHeader>Inventory</PageHeader>}
+            {window.innerWidth > 768 && <PageHeader>Blooks</PageHeader>}
 
             <div className={styles.leftSide}>
                 <SearchBox

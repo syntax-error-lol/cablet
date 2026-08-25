@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 18px;
     margin: 0 auto;
-    max-width: 1100px;
+    max-width: 1060px;
     padding: 24px 5%;
     width: 90%;
 }
@@ -11,8 +11,9 @@
 .hero,
 .section {
     background: var(--primary-color);
-    border: 1px solid var(--secondary-color);
-    border-radius: 8px;
+    border-bottom: 5px solid var(--tertiary-color);
+    border-radius: 10px;
+    box-shadow: inset 0 -5px rgba(0, 0, 0, .18), 0 0 4px rgba(0, 0, 0, .15);
     padding: 24px;
 }
 
@@ -21,10 +22,36 @@
     display: flex;
     justify-content: space-between;
     gap: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero::after {
+    border: 18px solid rgba(255, 255, 255, .06);
+    border-radius: 50%;
+    bottom: -72px;
+    content: "";
+    height: 170px;
+    position: absolute;
+    right: 32px;
+    width: 170px;
+}
+
+.crest {
+    align-items: center;
+    background: rgba(0, 0, 0, .16);
+    box-shadow: inset 0 -4px rgba(0, 0, 0, .12);
+    clip-path: polygon(50% 0, 92% 15%, 86% 66%, 50% 100%, 14% 66%, 8% 15%);
+    color: var(--accent-color);
+    display: flex;
+    flex: 0 0 72px;
+    font-size: 30px;
+    height: 78px;
+    justify-content: center;
 }
 
 .eyebrow {
-    color: #7dd3fc;
+    color: var(--accent-color);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -37,13 +64,30 @@ p {
 }
 
 h1 {
+    font-family: "Titan One", sans-serif;
     font-size: 2rem;
+    font-weight: 400;
     margin: 6px 0;
 }
 
 h2 {
     font-size: 1.1rem;
     margin-bottom: 16px;
+}
+
+.sectionHeading {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.sectionHeading > i,
+.total {
+    color: var(--accent-color);
+}
+
+.sectionHeading > i {
+    font-size: 20px;
 }
 
 p,
@@ -85,7 +129,7 @@ p,
 }
 
 .stat i {
-    color: #7dd3fc;
+    color: var(--accent-color);
     font-size: 1.2rem;
 }
 
@@ -107,6 +151,83 @@ p,
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+.commandGrid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 14px;
+}
+
+.command {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    min-width: 0;
+    text-align: left;
+}
+
+.command > span {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.command small {
+    color: rgba(255, 255, 255, .62);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+.command > i {
+    color: var(--accent-color);
+    font-size: 14px;
+    margin-left: 12px;
+}
+
+.locked {
+    cursor: default;
+    filter: grayscale(1);
+    opacity: .55;
+}
+
+.accessSection {
+    align-items: center;
+    background: var(--tertiary-color);
+    border-bottom: 5px solid var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: inset 0 -5px rgba(0, 0, 0, .18);
+    display: flex;
+    gap: 24px;
+    justify-content: space-between;
+    padding: 20px 24px;
+}
+
+.accessCopy {
+    flex: 0 1 250px;
+}
+
+.accessCopy h2 {
+    margin: 5px 0;
+}
+
+.permissionList {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 7px;
+    justify-content: flex-end;
+}
+
+.permission {
+    background: var(--secondary-color);
+    border-radius: 5px;
+    color: rgba(255, 255, 255, .8);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px 8px;
 }
 
 .editor {
@@ -186,8 +307,8 @@ p,
 }
 
 .badgePicker .selectedBadge {
-    border-color: #7dd3fc;
-    box-shadow: 0 0 0 1px #7dd3fc;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 1px var(--accent-color);
 }
 
 @media only screen and (max-width: 700px) {
@@ -196,8 +317,23 @@ p,
         flex-direction: column;
     }
 
+    .crest {
+        flex-basis: 56px;
+        height: 62px;
+    }
+
     .statsGrid,
-    .catalogGrid {
+    .catalogGrid,
+    .commandGrid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .accessSection {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .permissionList {
+        justify-content: flex-start;
     }
 }
