@@ -47,7 +47,12 @@ const catalog = {
         { id: 8, path: "/content/packs/Debug.png" },
         { id: 9, path: "/content/packs/Miscellaneous.png" },
         { id: 10, path: "/content/shield.png" },
-        { id: 11, path: "/content/levelStar.png" }
+        { id: 11, path: "/content/levelStar.png" },
+        { id: 15, path: "/content/blooks/Bot-Lil.svg" },
+        { id: 16, path: "/content/blooks/Bot-Lovely.svg" },
+        { id: 17, path: "/content/blooks/Bot-Angry.svg" },
+        { id: 18, path: "/content/blooks/Bot-Happy.svg" },
+        { id: 19, path: "/content/packs/Bot.svg" }
     ],
     badges: [
         { id: 1, name: "Owner", imageId: 3, priority: 0 },
@@ -63,17 +68,17 @@ const catalog = {
         { id: 4, name: "Ocean", imageId: 14 }
     ],
     blooks: [
-        { id: 1, name: "Lil Bot", imageId: 1, rarityId: 1, packId: 1, chance: 19.5, price: 5, description: "A friendly little bot.", isBig: false },
-        { id: 2, name: "Lovely Bot", imageId: 5, rarityId: 1, packId: 1, chance: 19.5, price: 10, description: "A bot with a kind heart.", isBig: false },
-        { id: 3, name: "Angry Bot", imageId: 6, rarityId: 1, packId: 1, chance: 19.5, price: 25, description: "A bot having a rough day.", isBig: false },
-        { id: 4, name: "Happy Bot", imageId: 7, rarityId: 2, packId: 1, chance: 19.5, price: 50, description: "A bot that is always smiling.", isBig: false }
+        { id: 1, name: "Lil Bot", imageId: 15, rarityId: 1, packId: 1, chance: 19.5, price: 5, description: "A friendly little bot.", isBig: false },
+        { id: 2, name: "Lovely Bot", imageId: 16, rarityId: 1, packId: 1, chance: 19.5, price: 10, description: "A bot with a kind heart.", isBig: false },
+        { id: 3, name: "Angry Bot", imageId: 17, rarityId: 1, packId: 1, chance: 19.5, price: 25, description: "A bot having a rough day.", isBig: false },
+        { id: 4, name: "Happy Bot", imageId: 18, rarityId: 2, packId: 1, chance: 19.5, price: 50, description: "A bot that is always smiling.", isBig: false }
     ],
     emojis: [],
     fonts: [],
     items: [{ id: 1, name: "Lucky Charm", imageId: 10, rarityId: 1, description: "A small charm that makes every win feel better." }],
     "item-shop": [{ id: 1, type: "ITEM", itemId: 1, price: 75, weekly: false }],
     packs: [
-        { id: 1, name: "Bot Pack", imageId: 9, backgroundId: 4, price: 25, rarityIds: [1, 2], enabled: true }
+        { id: 1, name: "Bot Pack", imageId: 19, backgroundId: 4, price: 25, rarityIds: [1, 2], enabled: true }
     ],
     rarities: [
         { id: 1, name: "Common", color: "#7f8c8d", animationType: "COMMON" },
