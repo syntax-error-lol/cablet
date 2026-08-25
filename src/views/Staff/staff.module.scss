@@ -125,6 +125,71 @@ p,
     padding: 8px;
 }
 
+.profilePreview {
+    overflow: hidden;
+    border: 1px solid var(--secondary-color);
+    border-radius: 6px;
+}
+
+.profilePreviewBanner {
+    display: block;
+    height: 76px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.profilePreviewBody {
+    align-items: center;
+    background: var(--secondary-color);
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+}
+
+.profilePreviewAvatar {
+    border-radius: 50%;
+    height: 48px;
+    object-fit: cover;
+    width: 48px;
+}
+
+.profilePreviewBadges,
+.badgePicker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.profilePreviewBadges img {
+    height: 20px;
+    object-fit: contain;
+    width: 20px;
+}
+
+.badgePicker button {
+    align-items: center;
+    background: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    gap: 5px;
+    padding: 5px 7px;
+}
+
+.badgePicker button img {
+    height: 20px;
+    object-fit: contain;
+    width: 20px;
+}
+
+.badgePicker .selectedBadge {
+    border-color: #7dd3fc;
+    box-shadow: 0 0 0 1px #7dd3fc;
+}
+
 @media only screen and (max-width: 700px) {
     .hero {
         align-items: flex-start;

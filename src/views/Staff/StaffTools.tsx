@@ -1,11 +1,15 @@
 import { Navigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "@stores/UserStore/index";
+import { useData } from "@stores/DataStore/index";
+import { useResource } from "@stores/ResourceStore/index";
 import { PermissionTypeEnum } from "@blacket/types";
 import styles from "./staff.module.scss";
 
 export default function StaffTools({ title, message, endpoint }: { title: string; message: string; endpoint: string }) {
     const { user } = useUser();
+    const { badges: catalogBadges } = useData();
+    const { resourceIdToPath } = useResource();
     const canManageUsers = user?.hasPermission(PermissionTypeEnum.MANAGE_USERS) || false;
     const [items, setItems] = useState<any[]>([]);
     const [editing, setEditing] = useState<string | null>(null);
@@ -49,10 +53,29 @@ export default function StaffTools({ title, message, endpoint }: { title: string
                             }}>Edit profile</button>
                             {editing === item.id && <div className={styles.editor}>
                                 <strong>Editing {item.username}</strong>
+                                <div className={styles.profilePreview}>
+                                    <img className={styles.profilePreviewBanner} src={item.bannerId ? resourceIdToPath(item.bannerId) : window.constructCDNUrl("/content/banners/Default.png")} alt="Profile banner preview" />
+                                    <div className={styles.profilePreviewBody}>
+                                        <img className={styles.profilePreviewAvatar} src={avatarUrl || window.constructCDNUrl("/content/blooks/Default.png")} alt="Profile avatar preview" />
+                                        <div>
+                                            <strong style={{ color }}>{username || "Username"}</strong>
+                                            <div className={styles.profilePreviewBadges}>
+                                                {catalogBadges.filter((badge: any) => badges.split(",").map(Number).includes(badge.id)).map((badge: any) => <img key={badge.id} src={resourceIdToPath(badge.imageId)} alt={badge.name} title={badge.name} />)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <input value={username} onChange={(event) => setUsername(event.target.value)} aria-label="Username" placeholder="Username" />
                                 <input type="url" value={avatarUrl} onChange={(event) => setAvatarUrl(event.target.value)} aria-label="Custom profile picture URL" placeholder="Custom PFP URL" />
                                 <input value={color} onChange={(event) => setColor(event.target.value)} aria-label="Name color" />
-                                <input value={badges} onChange={(event) => setBadges(event.target.value)} aria-label="Badge IDs" placeholder="Badge IDs: 1,2" />
+                                <div className={styles.badgePicker}>
+                                    {catalogBadges.map((badge: any) => {
+                                        const selected = badges.split(",").map(Number).includes(badge.id);
+                                        return <button type="button" className={selected ? styles.selectedBadge : ""} key={badge.id} onClick={() => setBadges(selected ? badges.split(",").filter((id) => Number(id) !== badge.id).join(",") : `${badges}${badges ? "," : ""}${badge.id}`)}>
+                                            <img src={resourceIdToPath(badge.imageId)} alt={badge.name} />{badge.name}
+                                        </button>;
+                                    })}
+                                </div>
                                 <input type="number" min="0" value={tokens} onChange={(event) => setTokens(Number(event.target.value))} aria-label="Tokens" />
                                 <input type="number" min="0" value={diamonds} onChange={(event) => setDiamonds(Number(event.target.value))} aria-label="Diamonds" />
                                 <input type="number" min="0" value={experience} onChange={(event) => setExperience(Number(event.target.value))} aria-label="Experience" />

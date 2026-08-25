@@ -180,6 +180,7 @@ export default function TradingPlaza() {
 
         let _previousPos = { x: 0, y: 0 };
         let _lastFootstep = 0;
+        let movementTimer: number | null = null;
 
         let sprinting = false;
 
@@ -294,8 +295,8 @@ export default function TradingPlaza() {
                 onFrame: async (entity, deltaTime) => {
                     renderPlayerText(entity);
 
-                    entity.x = lerp(entity.x, entity?.targetX ?? 0, (entity?.targetEasingSpeed ?? 0.1 * deltaTime));
-                    entity.y = lerp(entity.y, entity?.targetY ?? 0, (entity?.targetEasingSpeed ?? 0.1 * deltaTime));
+                    entity.x = lerp(entity.x, entity?.targetX ?? 0, (entity?.targetEasingSpeed ?? 0.1) * deltaTime);
+                    entity.y = lerp(entity.y, entity?.targetY ?? 0, (entity?.targetEasingSpeed ?? 0.1) * deltaTime);
                 }
             });
 
@@ -466,7 +467,7 @@ export default function TradingPlaza() {
                 _previousPos.y = player.y;
             }
 
-            setTimeout(movementLoop, 1000 / 20);
+            movementTimer = window.setTimeout(movementLoop, 1000 / 20);
         };
 
         movementLoop();
@@ -506,6 +507,7 @@ export default function TradingPlaza() {
 
         return () => {
             active = false;
+            if (movementTimer) window.clearTimeout(movementTimer);
 
             player.destroy?.();
 
@@ -541,12 +543,16 @@ export default function TradingPlaza() {
             />}
 
             <div className={styles.ui}>
-                <div
-                    className={styles.topLeft}
-                >
-                    {connected ? "Connected to Trading Plaza" : "Disconnected from Trading Plaza"}
+                <div className={styles.topLeft}>
+                    <strong>Trading Plaza</strong>
+                    <span className={connected ? styles.connected : styles.disconnected}>{connected ? "Online" : "Offline"}</span>
                     <br />
                     <div style={{ color: latency < 100 ? "unset" : latency < 200 ? "yellow" : "red" }}>Ping: {latency}ms</div>
+                </div>
+                <div className={styles.helpPanel}>
+                    <strong>Move around</strong>
+                    <span>WASD or arrow keys</span>
+                    <span>Shift to run</span>
                 </div>
             </div>
 

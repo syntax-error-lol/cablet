@@ -12,6 +12,38 @@
     }
 }
 
+.intro {
+    flex-basis: 100%;
+    margin: 20px 0 12px;
+    text-align: center;
+}
+
+.intro h1 {
+    font-family: "Titan One";
+    font-size: 3rem;
+    margin: 4px 0;
+}
+
+.intro p,
+.communityCredit {
+    color: rgba(255, 255, 255, .7);
+}
+
+.eyebrow {
+    color: #7dd3fc;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.communityCredit {
+    background: var(--primary-color);
+    border-radius: 7px;
+    padding: 20px;
+    text-align: center;
+    width: 450px;
+}
+
 .creditContainer {
     display: flex;
     flex-direction: row;

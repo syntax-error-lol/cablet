@@ -78,12 +78,12 @@ export default function BannerCategory() {
                     <div className={styles.bannerName}>Upload Banner</div>
                 </div>
 
-                <Banner banner={banners.find((banner) => banner.id === 1)!} onClick={() => onSelect(1)} />
+                {banners.find((banner) => banner.id === 1) && <Banner banner={banners.find((banner) => banner.id === 1)!} onClick={() => onSelect(1)} />}
 
                 {banners
-                    .filter((banner) => banner.name.toLowerCase().includes(search.toLowerCase()))
+                    .filter((banner) => banner.id !== 1 && banner.name.toLowerCase().includes(search.toLowerCase()))
                     .sort((a, b) => a.priority - b.priority)
-                    .map((banner) => (user.banners as number[]).includes(banner.id) && <Banner key={banner.id} banner={banner} onClick={() => onSelect(banner.id)} />)
+                    .map((banner) => (user.banners || []).includes(banner.id) && <Banner key={banner.id} banner={banner} onClick={() => onSelect(banner.id)} />)
                 }
             </div>
         </>

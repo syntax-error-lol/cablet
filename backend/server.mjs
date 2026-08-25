@@ -36,6 +36,9 @@ const catalog = {
     resources: [
         { id: 1, path: "/content/blooks/Default.png" },
         { id: 2, path: "/content/banners/Default.png" },
+        { id: 12, path: "/content/banners/Neon.svg" },
+        { id: 13, path: "/content/banners/Sunset.svg" },
+        { id: 14, path: "/content/banners/Ocean.svg" },
         { id: 3, path: "/content/logo.png" },
         { id: 4, path: "/content/background.png" },
         { id: 5, path: "/content/blooks/Information.png" },
@@ -49,9 +52,16 @@ const catalog = {
     badges: [
         { id: 1, name: "Owner", imageId: 3, priority: 0 },
         { id: 2, name: "Staff", imageId: 10, priority: 1 },
-        { id: 3, name: "Founder", imageId: 11, priority: 2 }
+        { id: 3, name: "Founder", imageId: 11, priority: 2 },
+        { id: 4, name: "Early Supporter", imageId: 10, priority: 3 },
+        { id: 5, name: "Collector", imageId: 11, priority: 4 }
     ],
-    banners: [{ id: 1, name: "Default Banner", imageId: 2 }],
+    banners: [
+        { id: 1, name: "Default Banner", imageId: 2 },
+        { id: 2, name: "Neon Nights", imageId: 12 },
+        { id: 3, name: "Sunset", imageId: 13 },
+        { id: 4, name: "Ocean", imageId: 14 }
+    ],
     blooks: [
         { id: 1, name: "Default Blook", imageId: 1, rarityId: 1, price: 5, description: "A local starter blook.", isBig: false },
         { id: 2, name: "Information Blook", imageId: 5, rarityId: 1, price: 10, description: "A helpful common blook.", isBig: false },
@@ -65,7 +75,9 @@ const catalog = {
     packs: [
         { id: 1, name: "Starter Pack", imageId: 1, backgroundId: 4, price: 0, rarityIds: [1, 2], enabled: true },
         { id: 2, name: "Debug Pack", imageId: 8, backgroundId: 4, price: 25, rarityIds: [1, 2, 3], enabled: true },
-        { id: 3, name: "Mystery Pack", imageId: 9, backgroundId: 4, price: 100, rarityIds: [2, 3], enabled: true }
+        { id: 3, name: "Mystery Pack", imageId: 9, backgroundId: 4, price: 100, rarityIds: [2, 3], enabled: true },
+        { id: 4, name: "Treasure Pack", imageId: 8, backgroundId: 4, price: 250, rarityIds: [1, 2, 3], enabled: true },
+        { id: 5, name: "Midnight Pack", imageId: 9, backgroundId: 4, price: 500, rarityIds: [2, 3], enabled: true }
     ],
     rarities: [
         { id: 1, name: "Common", color: "#7f8c8d", animationType: "COMMON" },
@@ -73,7 +85,8 @@ const catalog = {
         { id: 3, name: "Epic", color: "#9b59b6", animationType: "EPIC" }
     ],
     titles: [],
-    products: [],
+    products: [{ id: 1, name: "Blacket Plus", description: "Support the rewrite and unlock a Plus profile badge.", imageId: 3, price: 4.99, subscriptionPrice: 4.99, isSubscription: true, isQuantityCapped: true, local: true, color1: "#0d9488", color2: "#164e63" }],
+    stores: [{ id: 1, name: "Memberships", description: "Make your profile feel like yours.", priority: 0, products: [1] }],
     "spinny-wheels": [],
     boosters: {
         global: { chance: null, shiny: null },
@@ -138,7 +151,7 @@ const publicUser = (user) => ({
     role: isOwner(user) ? "OWNER" : "USER",
     isOwner: isOwner(user),
     permissions: isOwner(user) ? staffPermissions : (user.permissions || []),
-    badges: isOwner(user) ? catalog.badges : (user.badges || []),
+    badges: user.badges || [],
     blooks: user.blooks || [],
     authMethods: [],
     avatarUrl: user.avatarUrl || "",
@@ -152,7 +165,8 @@ const publicUser = (user) => ({
     statistics: { packsOpened: 0, messagesSent: 0, ...(user.statistics || {}) },
     tokens: user.tokens ?? (isOwner(user) ? 10000 : 0),
     diamonds: user.diamonds || 0,
-    experience: user.experience || 0
+    experience: user.experience || 0,
+    plusUntil: user.plusUntil || null
 });
 
 const currentUser = (request) => {
@@ -432,7 +446,17 @@ const server = createServer(async (request, response) => {
 
     if (path === "/api/data/resources") return json(response, 200, catalog.resources);
 
-    if (path === "/api/stripe/stores") return json(response, 200, []);
+    if (path === "/api/stripe/stores") return json(response, 200, catalog.stores);
+
+    if (path.match(/^\/api\/stripe\/local-purchase\/\d+$/) && request.method === "POST") {
+        const user = currentUser(request);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        const product = catalog.products.find((entry) => entry.id === Number(path.split("/").pop()));
+        if (!product) return json(response, 404, { message: "Product not found" });
+        user.plusUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        saveUsers();
+        return json(response, 200, { plusUntil: user.plusUntil });
+    }
 
     if (path === "/api/leaderboard") {
         const ranked = [...users.values()].sort((a, b) => (b.diamonds || 0) - (a.diamonds || 0));

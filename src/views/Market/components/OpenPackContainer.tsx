@@ -104,12 +104,24 @@ export default function OpenPackContainer({ opening, image, video, animationType
             running = false;
 
             if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+            img.style.removeProperty("transform");
+            img.style.removeProperty("left");
+            img.style.removeProperty("top");
+            img.style.removeProperty("position");
         };
     }, [ended]);
 
     // pack animation for chromas / mythicals
     useEffect(() => {
-        if (!opening) return;
+        if (!opening) {
+            if (chromaImageRef.current) {
+                chromaImageRef.current.style.opacity = "1";
+                chromaImageRef.current.style.display = "";
+                chromaImageRef.current.style.removeProperty("transform");
+                chromaImageRef.current.style.removeProperty("filter");
+            }
+            return;
+        }
         if (![RarityAnimationTypeEnum.CHROMA, RarityAnimationTypeEnum.MYTHICAL].includes(animationType as RarityAnimationTypeEnum)) return;
         const isMythical = animationType === RarityAnimationTypeEnum.MYTHICAL;
 
@@ -171,7 +183,7 @@ export default function OpenPackContainer({ opening, image, video, animationType
                 animationFrameId = requestAnimationFrame(animate);
             } else {
                 if (!video) {
-                    playSounds(["chroma-explode", isMythical ? "mythical-explode" : ""]);
+                    playSounds(["chroma-explode", ...(isMythical ? ["mythical-explode"] : [])]);
 
                     img.style.opacity = "0";
                     img.style.transition = "opacity 0.3s ease-out, transform 0.3s ease-out, filter 0.3s ease-out, border-radius 0.3s ease-out, background-color 0.3s ease-out";
@@ -190,6 +202,15 @@ export default function OpenPackContainer({ opening, image, video, animationType
 
         return () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            img.style.opacity = "1";
+            img.style.display = "";
+            img.style.removeProperty("transform");
+            img.style.removeProperty("filter");
+            img.style.removeProperty("transition");
+            img.style.removeProperty("position");
+            img.style.removeProperty("left");
+            img.style.removeProperty("top");
+            img.style.removeProperty("z-index");
         };
     }, [opening, animationType]);
 

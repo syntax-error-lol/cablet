@@ -276,7 +276,7 @@ export default function Dashboard() {
                     </div>
 
                     <div className={styles.userBadges}>
-                        {viewingUser.badges.sort((a, b) => a.priority - b.priority).map((badge) => badge.imageId && <div className={styles.badgeContainer} key={badge.id}>
+                        {[...(viewingUser.badges || [])].sort((a, b) => a.priority - b.priority).map((badge) => badge.imageId && <div className={styles.badgeContainer} key={badge.id}>
                             <ImageOrVideo src={resourceIdToPath(badge.imageId)} alt={badge.name} />
                         </div>)}
                     </div>

@@ -33,6 +33,39 @@
     pointer-events: none;
 }
 
+.topLeft strong,
+.topLeft span {
+    margin-right: 8px;
+}
+
+.connected,
+.disconnected {
+    border-radius: 999px;
+    font-size: 11px;
+    padding: 3px 7px;
+}
+
+.connected { background: rgba(34, 197, 94, .2); color: #86efac; }
+.disconnected { background: rgba(239, 68, 68, .2); color: #fca5a5; }
+
+.helpPanel {
+    background: rgba(8, 15, 30, .72);
+    border: 1px solid rgba(255, 255, 255, .15);
+    border-radius: 8px;
+    bottom: 18px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 13px;
+    pointer-events: none;
+    position: absolute;
+    right: 18px;
+    text-align: right;
+}
+
+.helpPanel span { color: rgba(255, 255, 255, .68); font-size: 12px; }
+
 .overlay {
     position: absolute;
     top: 0;

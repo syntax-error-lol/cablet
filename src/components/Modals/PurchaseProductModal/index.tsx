@@ -118,7 +118,30 @@ function TheModal({ product, subscription = false }: ProductPurchaseModalProps) 
     const [quantity, setQuantity] = useState<string>("1");
     const [accepted, setAccepted] = useState<boolean>(false);
 
-    if (!stripe || !user) return null;
+    if (!user) return null;
+
+    if (product.local) return (
+        <>
+            <Modal.ModalHeader>Activate {product.name}</Modal.ModalHeader>
+            <Modal.ModalBody>This local checkout activates one month of Plus on your account. No payment details are needed in the rewrite environment.</Modal.ModalBody>
+            {error !== "" && <ErrorContainer>{error}</ErrorContainer>}
+            <Modal.ModalButtonContainer loading={loading}>
+                <Button.GenericButton onClick={() => {
+                    setLoading(true);
+                    window.fetch2.post(`/api/stripe/local-purchase/${product.id}`, {})
+                        .then((response: any) => {
+                            user.plusUntil = response.data.plusUntil;
+                            showSuccessModal();
+                        })
+                        .catch((err) => setError(err?.data?.message ?? "Something went wrong."))
+                        .finally(() => setLoading(false));
+                }}>Activate Plus</Button.GenericButton>
+                <Button.GenericButton onClick={closeModal}>Cancel</Button.GenericButton>
+            </Modal.ModalButtonContainer>
+        </>
+    );
+
+    if (!stripe) return null;
 
     const showSuccessModal = () => {
         createModal(<SuccessModal product={product} quantity={parseInt(quantity)} subscription={subscription} />, <SuccessModalOutside />);

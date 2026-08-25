@@ -29,3 +29,8 @@ backend/local-data.json
 
 public/**/*
 !public/favicon.ico
+!public/content/
+!public/content/banners/
+!public/content/banners/Neon.svg
+!public/content/banners/Sunset.svg
+!public/content/banners/Ocean.svg
