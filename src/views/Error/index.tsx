@@ -7,7 +7,10 @@ import styles from "./error.module.scss";
 import { ErrorCode, ErrorProps } from "./error.d";
 
 export default function Error({ code, reason }: ErrorProps) {
-    const error: any = useRouteError();
+    const routeError: unknown = useRouteError();
+    const error = routeError instanceof globalThis.Error
+        ? routeError
+        : new globalThis.Error(typeof routeError === "string" ? routeError : "Unknown route error");
 
     let reasonText = "breaking rules";
     let reasonEndTime = `at ${new Date()}`;

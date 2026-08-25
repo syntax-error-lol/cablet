@@ -14,8 +14,6 @@ import { AuctionTypeEnum, Blook as BlookType, Item as ItemType, Rarity, UserBloo
 
 export default function Inventory() {
     const { user, getBlookAmount } = useUser();
-    if (!user) return <Navigate to="/login" />;
-
     const { blooks, items, rarities } = useData();
     const { resourceIdToPath } = useResource();
     const { createModal } = useModal();
@@ -52,6 +50,8 @@ export default function Inventory() {
                 setDescription("");
         }
     }, [selected]);
+
+    if (!user) return <Navigate to="/login" />;
 
     const getLowestSerialBlook = (blookId: number, shiny: boolean): number | null => {
         const blook = user.blooks

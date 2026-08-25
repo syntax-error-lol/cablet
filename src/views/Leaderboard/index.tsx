@@ -18,12 +18,9 @@ export default function Leaderboard() {
     const { user } = useUser();
     const { addCachedUser, getCachedUser } = useCachedUser();
 
-    if (!user) return <Navigate to="/login" />;
-
     const { leaderboard, sortBy, setSortBy } = useLeaderboardStore();
 
     const { getLeaderboard } = useLeaderboardController();
-
 
     useEffect(() => {
         const addUsers = async () => {
@@ -49,6 +46,8 @@ export default function Leaderboard() {
 
         return () => window.clearInterval(refresh);
     }, [leaderboard]);
+
+    if (!user) return <Navigate to="/login" />;
 
     const switchSort = () => sortBy === PlacementType.DIAMONDS ? setSortBy(PlacementType.EXPERIENCE) : setSortBy(PlacementType.DIAMONDS);
 
