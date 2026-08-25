@@ -70,8 +70,8 @@ const catalog = {
     ],
     emojis: [],
     fonts: [],
-    items: [],
-    "item-shop": [],
+    items: [{ id: 1, name: "Lucky Charm", imageId: 10, rarityId: 1, description: "A small charm that makes every win feel better." }],
+    "item-shop": [{ id: 1, type: "ITEM", itemId: 1, price: 75, weekly: false }],
     packs: [
         { id: 1, name: "Starter Pack", imageId: 1, backgroundId: 4, price: 0, rarityIds: [1, 2], enabled: true },
         { id: 2, name: "Debug Pack", imageId: 8, backgroundId: 4, price: 25, rarityIds: [1, 2, 3], enabled: true },
@@ -109,6 +109,13 @@ const loadUsers = () => {
 const users = loadUsers();
 const sessions = new Map();
 const messages = new Map();
+const guilds = new Map();
+if (existsSync(dataPath)) {
+    try {
+        const saved = JSON.parse(readFileSync(dataPath, "utf8"));
+        for (const guild of saved.guilds || []) guilds.set(guild.id, guild);
+    } catch { /* users loader reports malformed local data */ }
+}
 const isOwner = (user) => user?.username?.toLowerCase() === "syntax";
 
 const hashPassword = (password, salt) => scryptSync(password, salt, 64).toString("hex");
@@ -122,7 +129,7 @@ const passwordMatches = (user, password) => {
 
 const saveUsers = () => {
     mkdirSync(dirname(dataPath), { recursive: true });
-    writeFileSync(dataPath, JSON.stringify({ users: [...users.values()] }, null, 2));
+    writeFileSync(dataPath, JSON.stringify({ users: [...users.values()], guilds: [...guilds.values()] }, null, 2));
 };
 
 const json = (response, status, body) => {
@@ -153,6 +160,8 @@ const publicUser = (user) => ({
     permissions: isOwner(user) ? staffPermissions : (user.permissions || []),
     badges: user.badges || [],
     blooks: user.blooks || [],
+    items: user.items || [],
+    guild: [...guilds.values()].find((guild) => guild.members.includes(user.id)) || null,
     authMethods: [],
     avatarUrl: user.avatarUrl || "",
     color: user.color || "#ffffff",
@@ -240,7 +249,7 @@ const server = createServer(async (request, response) => {
             id: randomUUID(), username, createdAt: new Date().toISOString(), passwordSalt,
             passwordHash: hashPassword(password, passwordSalt), permissions: [], badges: [],
             settings: { lowPerformanceMode: false, friendRequests: "ON", openPacksInstantly: false },
-            statistics: { packsOpened: 0, messagesSent: 0 }, blooks: [], tokens: 0, diamonds: 0, experience: 0
+            statistics: { packsOpened: 0, messagesSent: 0 }, blooks: [], items: [], tokens: 250, diamonds: 0, experience: 0
         };
         users.set(username.toLowerCase(), user);
         saveUsers();
@@ -267,6 +276,58 @@ const server = createServer(async (request, response) => {
     if (path === "/api/users/me") {
         const user = currentUser(request);
         return user ? json(response, 200, publicUser(user)) : json(response, 401, { message: "Not authenticated" });
+    }
+
+    if (path === "/api/guilds" && request.method === "GET") return json(response, 200, [...guilds.values()].map((guild) => ({ ...guild, memberCount: guild.members.length })));
+
+    if (path === "/api/guilds" && request.method === "POST") {
+        const user = currentUser(request);
+        const body = await readBody(request);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        if ([...guilds.values()].some((guild) => guild.members.includes(user.id) || guild.requests.includes(user.id))) return json(response, 409, { message: "You already belong to or requested to join a clan." });
+        const name = String(body.name || "").trim();
+        if (name.length < 2 || name.length > 24) return json(response, 400, { message: "Clan names must be 2 to 24 characters." });
+        if ([...guilds.values()].some((guild) => guild.name.toLowerCase() === name.toLowerCase())) return json(response, 409, { message: "That clan name is already taken." });
+        const guild = { id: randomUUID(), name, ownerId: user.id, level: 1, experience: 0, members: [user.id], requests: [], messages: [] };
+        guilds.set(guild.id, guild);
+        saveUsers();
+        return json(response, 201, { ...guild, memberCount: 1 });
+    }
+
+    if (path.match(/^\/api\/guilds\/[^/]+\/(join|accept|messages)$/)) {
+        const parts = path.split("/");
+        const guild = guilds.get(parts[3]);
+        const user = currentUser(request);
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        if (!guild) return json(response, 404, { message: "Clan not found" });
+        if (parts[4] === "join" && request.method === "POST") {
+            if (guild.members.includes(user.id)) return json(response, 409, { message: "You are already in this clan." });
+            if (guild.members.length + guild.requests.length >= 25) return json(response, 409, { message: "This clan is full." });
+            if (!guild.requests.includes(user.id)) guild.requests.push(user.id);
+            saveUsers();
+            return json(response, 200, { message: "Join request sent." });
+        }
+        if (parts[4] === "accept" && request.method === "POST") {
+            const body = await readBody(request);
+            if (guild.ownerId !== user.id) return json(response, 403, { message: "Only the clan owner can accept members." });
+            if (guild.members.length >= 25) return json(response, 409, { message: "This clan is full." });
+            const memberId = String(body.userId || "");
+            if (!guild.requests.includes(memberId)) return json(response, 404, { message: "Join request not found." });
+            guild.requests = guild.requests.filter((id) => id !== memberId);
+            guild.members.push(memberId);
+            saveUsers();
+            return json(response, 200, { ...guild, memberCount: guild.members.length });
+        }
+        if (parts[4] === "messages" && request.method === "GET") return json(response, 200, guild.messages.slice(-50));
+        if (parts[4] === "messages" && request.method === "POST") {
+            const body = await readBody(request);
+            if (!guild.members.includes(user.id)) return json(response, 403, { message: "Join the clan to use its chat." });
+            const message = { id: randomUUID(), userId: user.id, username: user.username, content: String(body.content || "").trim(), createdAt: new Date().toISOString() };
+            if (!message.content) return json(response, 400, { message: "Message cannot be empty." });
+            guild.messages.push(message);
+            saveUsers();
+            return json(response, 201, message);
+        }
     }
 
     if (path === "/api/staff/users" && request.method === "GET") {
@@ -440,8 +501,25 @@ const server = createServer(async (request, response) => {
         user.blooks = [...(user.blooks || []), userBlook];
         user.tokens = isOwner(user) ? (user.tokens ?? 10000) : (user.tokens || 0) - pack.price;
         user.statistics = { ...(user.statistics || {}), packsOpened: (user.statistics?.packsOpened || 0) + 1 };
+        const guild = [...guilds.values()].find((entry) => entry.members.includes(user.id));
+        if (guild) {
+            guild.experience += 10;
+            guild.level = Math.floor(guild.experience / 100) + 1;
+        }
         saveUsers();
         return json(response, 200, userBlook);
+    }
+
+    if (path.match(/^\/api\/market\/item-shop\/\d+$/) && request.method === "POST") {
+        const user = currentUser(request);
+        const entry = catalog["item-shop"].find((item) => item.id === Number(path.split("/").pop()));
+        if (!user) return json(response, 401, { message: "Not authenticated" });
+        if (!entry) return json(response, 404, { message: "Item not found" });
+        if ((user.tokens || 0) < entry.price) return json(response, 403, { message: "Not enough tokens" });
+        user.tokens -= entry.price;
+        user.items = [...(user.items || []), { id: randomUUID(), itemId: entry.itemId, usesLeft: 1 }];
+        saveUsers();
+        return json(response, 201, user.items[user.items.length - 1]);
     }
 
     if (path === "/api/data/resources") return json(response, 200, catalog.resources);

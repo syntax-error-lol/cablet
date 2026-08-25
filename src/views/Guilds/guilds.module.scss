@@ -1,0 +1,18 @@
+.page { margin: 28px auto; max-width: 900px; padding: 0 5%; }
+.hero, .chat, .create, .list article { background: var(--primary-color); border-radius: 8px; padding: 20px; }
+.hero span { color: #7dd3fc; font-size: .75rem; font-weight: 700; letter-spacing: .08em; }
+.hero h1 { font-size: 2.2rem; margin: 6px 0; }
+.hero p, .list p { color: rgba(255,255,255,.7); }
+.create { display: flex; gap: 10px; margin: 16px 0; }
+.create input, .chat input { background: var(--secondary-color); border: 0; border-radius: 4px; color: inherit; flex: 1; padding: 10px; }
+.page button { background: #7dd3fc; border: 0; border-radius: 4px; color: #092033; cursor: pointer; font-weight: 700; padding: 10px 14px; }
+.list { display: grid; gap: 10px; }
+.list article { align-items: center; display: flex; justify-content: space-between; }
+.list h2 { margin: 0; }
+.chat { margin-top: 16px; }
+.requests { background: var(--primary-color); border-radius: 8px; margin-top: 16px; padding: 20px; }
+.requests h2 { margin-top: 0; }
+.requests div { align-items: center; border-top: 1px solid var(--secondary-color); display: flex; justify-content: space-between; padding: 10px 0; }
+.messages { background: var(--secondary-color); border-radius: 4px; display: grid; gap: 8px; margin: 12px 0; max-height: 360px; min-height: 140px; overflow: auto; padding: 12px; }
+.chat form { display: flex; gap: 8px; }
+@media (max-width: 600px) { .create, .chat form, .list article { align-items: stretch; flex-direction: column; } }

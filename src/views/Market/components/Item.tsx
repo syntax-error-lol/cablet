@@ -10,7 +10,7 @@ import { ItemShopItemTypeEnum } from "@blacket/types";
 export default function Item({ itemShop, onClick }: ItemProps) {
     const { items, blooks, banners, titles, fonts } = useData();
     const { resourceIdToPath } = useResource();
-    const { user } = useUser();
+    const { user, setUser } = useUser();
 
     if (!user) return null;
 
@@ -42,7 +42,12 @@ export default function Item({ itemShop, onClick }: ItemProps) {
     return (
         <div
             className={styles.itemContainer}
-            onClick={onClick}
+            onClick={() => {
+                window.fetch2.post(`/api/market/item-shop/${itemShop.id}`, {})
+                    .then((res) => setUser({ ...user, tokens: user.tokens - itemShop.price, items: [...(user.items || []), res.data] }))
+                    .then(() => onClick?.())
+                    .catch(() => undefined);
+            }}
         >
             <div className={styles.itemName}>
                 {itemShop.type === ItemShopItemTypeEnum.TITLE

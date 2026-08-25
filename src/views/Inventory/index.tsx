@@ -149,7 +149,7 @@ export default function Inventory() {
                                 }
                                 className={styles.itemImageM}
                                 shiny={selectedType === SelectedTypeEnum.BLOOK && (selected as UserBlook).shiny}
-                                big={blook!.isBig}
+                                    big={selectedType === SelectedTypeEnum.BLOOK && blook?.isBig}
                             />
                         </div>
                     </div>

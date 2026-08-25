@@ -12,7 +12,7 @@ import {
 import { useData } from "@stores/DataStore/index";
 import { useResource } from "@stores/ResourceStore/index";
 import { useUser } from "@stores/UserStore/index";
-import { InventoryBlook /* , InventoryItem */ } from "./components";
+import { InventoryBlook, InventoryItem } from "./components";
 import { DEFAULT_OPTIONS, PACK_HEADER_H } from "./constants";
 import { flowLayout, sizeOf } from "./utils";
 import styles from "./itemContainer.module.scss";
@@ -157,6 +157,13 @@ export default function ItemContainer({ user, options, onClick, ...props }: Item
         amount={cell.amount}
         onClick={() => handleClick(cell)}
     />, [handleClick]);
+
+    const renderItems = () => <div className={styles.itemGrid}>
+        {(user.items || []).filter((item) => {
+            const itemData = (useData.getState().items || []).find((data) => data.id === item.itemId);
+            return itemData && (!mergedOptions.searchQuery || itemData.name.toLowerCase().includes(mergedOptions.searchQuery.toLowerCase()));
+        }).map((item) => <InventoryItem key={item.id} item={item} onClick={() => onClick?.({ type: SelectedTypeEnum.ITEM, item })} />)}
+    </div>;
 
     // DO NOT REMOVE THIS
     const flatRef = useRef<CollectionType | null>(null);
@@ -303,9 +310,8 @@ export default function ItemContainer({ user, options, onClick, ...props }: Item
 
     return (
         <div className={`${props.className ?? ""} ${styles.itemsContainer}`} style={props.style}>
-            {mergedOptions.showBlooks ? (
-                mergedOptions.showPacks ? renderPacksList() : renderFlatCollection()
-            ) : null}
+            {mergedOptions.showItems && renderItems()}
+            {mergedOptions.showBlooks && (mergedOptions.showPacks ? renderPacksList() : renderFlatCollection())}
         </div>
     );
 }

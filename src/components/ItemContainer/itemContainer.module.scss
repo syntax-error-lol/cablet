@@ -1,3 +1,9 @@
+.itemGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 12px;
+}
 .itemsContainer {
     display: flex;
     flex-direction: column;
