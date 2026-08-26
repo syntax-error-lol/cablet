@@ -1,3 +1,4 @@
+@@ -0,0 +1,110 @@
 databases:
   - name: blacket-db
     databaseName: blacket
@@ -10,7 +11,7 @@ services:
     runtime: node
     plan: free
     rootDir: .
-    buildCommand: git submodule update --init --recursive && (cd packages/common && bun install && bun run build && bun link) && (cd packages/types && bun install && bun run build && bun link) && (cd packages/mail-templates && bun install && bun run build && bun link) && (cd packages/core && bun link) && (cd backend && bun link @blacket/common && bun link @blacket/core && bun link @blacket/mail-templates && bun link @blacket/types && bun install && bun run prisma:gen && bun run build)
+    buildCommand: git submodule update --init --recursive && bun install --cwd backend && bun run --cwd backend prisma:gen && bun run --cwd backend build
     startCommand: bun run --cwd backend start:prod
     healthCheckPath: /api
     envVars:
@@ -18,41 +19,93 @@ services:
         value: $PORT
       - key: SERVER_TYPE
         value: PROD
+      - key: SERVER_BASE_URL
+        sync: false
       - key: SERVER_DATABASE_URL
         fromDatabase:
           name: blacket-db
           property: connectionString
+      - key: SERVER_MAIL_HOST
+        sync: false
+      - key: SERVER_MAIL_PORT
+        value: "587"
+      - key: SERVER_MAIL_USER
+        sync: false
+      - key: SERVER_MAIL_PASSWORD
+        sync: false
+      - key: SERVER_MAIL_FROM
+        sync: false
+      - key: SERVER_STRIPE_SECRET_KEY
+        sync: false
+      - key: SERVER_STRIPE_WEBHOOK_SECRET_KEY
+        sync: false
+      - key: SERVER_STRIPE_PORTAL_CONFIGURATION_ID
+        sync: false
+      - key: SERVER_S3_ACCESS_KEY
+        sync: false
+      - key: SERVER_S3_SECRET_KEY
+        sync: false
+      - key: SERVER_S3_BUCKET
+        sync: false
+      - key: SERVER_S3_REGION
+        value: us-east-2
+      - key: SERVER_TURNSTILE_SECRET_KEY
+        sync: false
+      - key: SERVER_DISCORD_CLIENT_SECRET
+        sync: false
+      - key: SERVER_DISCORD_PAYMENT_WEBHOOK_URL
+        sync: false
+      - key: SERVER_DISCORD_CRYSTAL_PAYMENT_WEBHOOK_URL
+        sync: false
+      - key: SERVER_DISCORD_INVOICE_WEBHOOK_URL
+        sync: false
       - key: SERVER_BLOCK_PROXIES
         value: "false"
       - key: SERVER_ALLOW_MULTIPLE_ACCOUNTS
-        value: "true"
+        value: "false"
       - key: SERVER_REGISTRATION_ENABLED
-        value: "true"
+        value: "false"
+      - key: SERVER_REGISTRATION_BYPASS_PASSWORD
+        sync: false
       - key: VITE_INFORMATION_NAME
         value: Blacket
       - key: VITE_INFORMATION_VERSION
         value: 3.0.0
-      - key: SERVER_BASE_URL
-        sync: false
 
   - type: web
     name: blacket-web
     runtime: static
     rootDir: .
-    buildCommand: git submodule update --init --recursive && (cd packages/types && bun install && bun run build && bun link) && (cd frontend && bun install && bun link @blacket/types && bun run build)
+    buildCommand: git submodule update --init --recursive && bun install --cwd frontend && bun run --cwd frontend build
     staticPublishPath: frontend/dist
     envVars:
-      - key: VITE_INFORMATION_NAME
-        value: Blacket
-      - key: VITE_INFORMATION_PRONUNCIATION
-        value: Black-it
-      - key: VITE_INFORMATION_VERSION
-        value: 3.0.0
-      - key: VITE_LEVEL_DIFFICULTY
-        value: "0.75"
-      - key: VITE_BASE_SHINY_CHANCE
-        value: "1"
       - key: VITE_BACKEND_URL
         sync: false
       - key: VITE_ALLOWED_ORIGINS
         sync: false
+      - key: VITE_MEDIA_URL
+        sync: false
+      - key: VITE_MEDIA_BACKUP_URL
+        sync: false
+      - key: VITE_CDN_URL
+        sync: false
+      - key: VITE_CDN_BACKUP_URL
+        sync: false
+      - key: VITE_STRIPE_PUBLIC_KEY
+        sync: false
+      - key: VITE_TURNSTILE_SITE_KEY
+        sync: false
+      - key: VITE_INFORMATION_NAME
+        value: Blacket
+      - key: VITE_INFORMATION_PRONUNCIATION
+        value: Black-it
+      - key: VITE_INFORMATION_DISCORD_INVITE
+        sync: false
+      - key: VITE_INFORMATION_VERSION
+        value: 3.0.0
+      - key: VITE_DISCORD_CLIENT_ID
+        sync: false
+      - key: VITE_LEVEL_DIFFICULTY
+        value: "0.75"
+      - key: VITE_BASE_SHINY_CHANCE
+        value: "1"
