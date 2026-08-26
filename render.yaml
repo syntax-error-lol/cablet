@@ -10,7 +10,7 @@ services:
     runtime: node
     plan: free
     rootDir: .
-    buildCommand: git submodule update --init --recursive && bun install --cwd backend && bun run --cwd backend prisma:gen && bun run --cwd backend build
+    buildCommand: git submodule update --init --recursive && (cd packages/common && bun install && bun run build && bun link) && (cd packages/types && bun install && bun run build && bun link) && (cd packages/mail-templates && bun install && bun run build && bun link) && (cd packages/core && bun link) && (cd backend && bun link @blacket/common && bun link @blacket/core && bun link @blacket/mail-templates && bun link @blacket/types && bun install && bun run prisma:gen && bun run build)
     startCommand: bun run --cwd backend start:prod
     healthCheckPath: /api
     envVars:
@@ -75,7 +75,7 @@ services:
     name: blacket-web
     runtime: static
     rootDir: .
-    buildCommand: git submodule update --init --recursive && bun install --cwd frontend && bun run --cwd frontend build
+    buildCommand: git submodule update --init --recursive && (cd packages/types && bun install && bun run build && bun link) && (cd frontend && bun install && bun link @blacket/types && bun run build)
     staticPublishPath: frontend/dist
     envVars:
       - key: VITE_BACKEND_URL
