@@ -1,0 +1,27 @@
+[submodule "backend"]
+	path = backend
+	url = https://codeberg.org/Blacket/backend.git
+
+[submodule "frontend"]
+	path = frontend
+	url = https://codeberg.org/Blacket/frontend.git
+
+[submodule "discord-bot"]
+	path = discord-bot
+	url = https://codeberg.org/Blacket/discord-bot.git
+
+[submodule "packages/core"]
+	path = packages/core
+	url = https://codeberg.org/Blacket/core.git
+
+[submodule "packages/types"]
+	path = packages/types
+	url = https://codeberg.org/Blacket/types.git
+
+[submodule "packages/common"]
+	path = packages/common
+	url = https://codeberg.org/Blacket/common.git
+
+[submodule "packages/mail-templates"]
+	path = packages/mail-templates
+	url = https://codeberg.org/Blacket/mail-templates.git
