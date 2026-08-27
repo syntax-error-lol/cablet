@@ -1,5 +1,11 @@
-import { BillingInterval, SubscriptionSwitchType } from "@blacket/types";
+import { BillingInterval } from "@blacket/types";
 import { getSubscriptionIntervalRank } from "./getSubscriptionIntervalRank";
+
+export enum SubscriptionSwitchType {
+    UPGRADE = "UPGRADE",
+    DOWNGRADE = "DOWNGRADE",
+    LATERAL = "LATERAL"
+}
 
 export function getSubscriptionSwitchType(current: {
     priority: number;

@@ -148,7 +148,6 @@ export class PrivateUser {
         if (this.groups) this.groups = undefined;
         if (this.subscriptions?.[0]) this.subscription = {
             ...this.subscriptions[0],
-            product: undefined,
             stripeSubscriptionId: undefined
         }
         else if (this.subscriptions) this.subscriptions = [];

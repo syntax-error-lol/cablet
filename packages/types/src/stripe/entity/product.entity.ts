@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { Product, ProductType } from "../../interfaces";
+import { Product } from "../../interfaces";
 
 export class StripeProductEntity {
     @Exclude()
@@ -31,7 +31,7 @@ export class StripeProductEntity {
 
     imageId: number;
 
-    type: ProductType;
+    type: string;
 
     color1: string;
     color2: string;
