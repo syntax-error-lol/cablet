@@ -83,6 +83,7 @@
     "@nestjs/core",
     "@prisma/client",
     "@prisma/engines",
+    "@zastix/prisma-generator-typescript-interfaces",
     "bcrypt",
     "prisma"
   ]
