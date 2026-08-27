@@ -11,7 +11,7 @@ services:
     ipAllowList: []
 
   - type: web
-    name: blacket
+    name: blacket-piyu
     runtime: node
     plan: free
     rootDir: .
