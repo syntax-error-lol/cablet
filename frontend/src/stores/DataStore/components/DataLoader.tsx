@@ -29,7 +29,10 @@ export default function DataLoader({ children }: { children: ReactNode }) {
                 setResources(res.data);
                 setCompleted((c) => c + 1);
             })
-            .catch(setError);
+            .catch((res) => {
+                setError(res);
+                setCompleted((c) => c + 1);
+            });
     }, []);
 
     useEffect(() => {
@@ -63,7 +66,10 @@ export default function DataLoader({ children }: { children: ReactNode }) {
                     setter(res.data);
                     setCompleted((c) => c + 1);
                 })
-                .catch(setError)
+                .catch((res) => {
+                    setError(res);
+                    setCompleted((c) => c + 1);
+                })
         ));
 
         window.fetch2.get("/api/data/fonts")
@@ -115,7 +121,7 @@ export default function DataLoader({ children }: { children: ReactNode }) {
                     .catch((res) => {
                         setError(res);
                         localStorage.removeItem("token");
-                        setTimeout(() => setLoading(false), 2000);
+                        setCompleted((c) => c + 1);
                     })
             ));
         } else {
