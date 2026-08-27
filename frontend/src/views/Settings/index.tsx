@@ -27,11 +27,6 @@ export default function Settings() {
             element: Section.Social
         },
         {
-            icon: "fas fa-wallet",
-            text: "Billing",
-            path: "/settings/billing"
-        },
-        {
             icon: "fas fa-shield-alt",
             text: "Security",
             path: "/settings/security",

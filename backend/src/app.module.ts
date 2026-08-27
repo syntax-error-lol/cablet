@@ -5,7 +5,6 @@ import { ThrottlerModule, seconds } from "@nestjs/throttler";
 import { ScheduleModule } from "@nestjs/schedule";
 import { MailerModule } from "@nestjs-modules/mailer";
 
-import { StripeModule } from "./stripe/stripe.module";
 
 import { CoreModule } from "./core/core.module";
 import { LoggerModule } from "./core/logger/logger.module";
@@ -61,8 +60,6 @@ import { AuthGuard, UserThrottlerGuard, PermissionGuard } from "./core/guard";
                 from: process.env.SERVER_MAIL_FROM
             }
         }),
-
-        StripeModule.forRoot(),
 
         CoreModule,
         LoggerModule,

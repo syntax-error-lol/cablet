@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 import { useUser } from "@stores/UserStore/index";
 import { useData } from "@stores/DataStore/index";
@@ -7,7 +6,7 @@ import { useLoading } from "@stores/LoadingStore/index";
 import { useSettings } from "@controllers/settings/useSettings/index";
 import { Button, Modal } from "@components/index";
 import { SettingsContainer, Divider } from "..";
-import { PlanText, UpgradeButton, ChangeUsernameModal } from "./components/index";
+import { ChangeUsernameModal } from "./components/index";
 
 import { SettingFriendRequestEnum } from "@blacket/types";
 
@@ -18,8 +17,6 @@ export default function Account() {
     const { setLoading } = useLoading();
 
     const { changeSetting } = useSettings();
-
-    const navigate = useNavigate();
 
     if (!user) return null;
 
@@ -72,24 +69,6 @@ export default function Account() {
             <Button.ClearButton onClick={() => createModal(<Modal.LogoutModal />)}>
                 Logout
             </Button.ClearButton>
-        </SettingsContainer>
-
-        <SettingsContainer header={{ icon: "fas fa-wallet", text: "Billing" }}>
-            <PlanText>Basic</PlanText>
-
-            <UpgradeButton>Upgrade</UpgradeButton>
-
-            <Divider margin={15} />
-
-            <div>
-                <b>Payment Method:</b> {user.paymentMethods.length > 0 ? <>
-                    <i className="fas fa-credit-card" style={{ marginLeft: 5, marginRight: 3 }} /> {user.paymentMethods.find((method) => method.primary)?.value}
-                </> : "None"}
-            </div>
-            <div style={{ marginTop: 5 }}>
-                {user.paymentMethods.length < 1 && <Button.ClearButton onClick={() => navigate("/settings/billing")}>Add Payment Method</Button.ClearButton>}
-                {user.paymentMethods.length > 0 && <Button.ClearButton onClick={() => navigate("/settings/billing")}>Manage Payment Methods</Button.ClearButton>}
-            </div>
         </SettingsContainer>
 
         <SettingsContainer header={{ icon: "fas fa-cog", text: "General" }}>
