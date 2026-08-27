@@ -1,4 +1,3 @@
-@@ -0,0 +1,110 @@
 databases:
   - name: blacket-db
     databaseName: blacket
@@ -6,6 +5,11 @@ databases:
     plan: free
 
 services:
+  - type: keyvalue
+    name: blacket-redis
+    plan: free
+    ipAllowList: []
+
   - type: web
     name: blacket-api
     runtime: node
@@ -20,47 +24,24 @@ services:
       - key: SERVER_TYPE
         value: PROD
       - key: SERVER_BASE_URL
-        sync: false
+        value: https://blacket-api.onrender.com
       - key: SERVER_DATABASE_URL
         fromDatabase:
           name: blacket-db
           property: connectionString
       - key: SERVER_REDIS_URL
-        sync: false
-      - key: SERVER_MAIL_HOST
-        sync: false
-      - key: SERVER_MAIL_PORT
-        value: "587"
-      - key: SERVER_MAIL_USER
-        sync: false
-      - key: SERVER_MAIL_PASSWORD
-        sync: false
-      - key: SERVER_MAIL_FROM
-        sync: false
-      - key: SERVER_S3_ACCESS_KEY
-        sync: false
-      - key: SERVER_S3_SECRET_KEY
-        sync: false
-      - key: SERVER_S3_BUCKET
-        sync: false
+        fromService:
+          type: keyvalue
+          name: blacket-redis
+          property: connectionString
       - key: SERVER_S3_REGION
         value: us-east-2
-      - key: SERVER_TURNSTILE_SECRET_KEY
-        sync: false
-      - key: SERVER_DISCORD_CLIENT_SECRET
-        sync: false
-      - key: SERVER_DISCORD_PAYMENT_WEBHOOK_URL
-        sync: false
-      - key: SERVER_DISCORD_CRYSTAL_PAYMENT_WEBHOOK_URL
-        sync: false
-      - key: SERVER_DISCORD_INVOICE_WEBHOOK_URL
-        sync: false
       - key: SERVER_BLOCK_PROXIES
         value: "false"
       - key: SERVER_ALLOW_MULTIPLE_ACCOUNTS
         value: "false"
       - key: SERVER_REGISTRATION_ENABLED
-        value: "false"
+        value: "true"
       - key: SERVER_REGISTRATION_BYPASS_PASSWORD
         value: ""
       - key: VITE_INFORMATION_NAME
@@ -80,29 +61,23 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_BACKEND_URL
-        sync: false
+        value: https://blacket-api.onrender.com
       - key: VITE_ALLOWED_ORIGINS
-        sync: false
+        value: https://blacket-web.onrender.com
       - key: VITE_MEDIA_URL
-        sync: false
+        value: https://media.blacket.org
       - key: VITE_MEDIA_BACKUP_URL
-        sync: false
+        value: https://blacket-media.s3.us-east-2.amazonaws.com
       - key: VITE_CDN_URL
-        sync: false
+        value: https://cdn-dev.blacket.org
       - key: VITE_CDN_BACKUP_URL
-        sync: false
-      - key: VITE_TURNSTILE_SITE_KEY
-        sync: false
+        value: https://s3.us-east-2.amazonaws.com/cdn-dev.blacket.org
       - key: VITE_INFORMATION_NAME
         value: Blacket
       - key: VITE_INFORMATION_PRONUNCIATION
         value: Black-it
-      - key: VITE_INFORMATION_DISCORD_INVITE
-        sync: false
       - key: VITE_INFORMATION_VERSION
         value: 3.0.0
-      - key: VITE_DISCORD_CLIENT_ID
-        sync: false
       - key: VITE_LEVEL_DIFFICULTY
         value: "0.75"
       - key: VITE_BASE_SHINY_CHANCE

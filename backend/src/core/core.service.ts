@@ -41,6 +41,7 @@ export class CoreService {
 
     async verifyTurnstile(token: string, ip?: string): Promise<boolean> {
         const secret = this.configService.get("SERVER_TURNSTILE_SECRET_KEY");
+        if (!secret) return true;
 
         const body = new URLSearchParams();
 
