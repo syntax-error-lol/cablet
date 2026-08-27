@@ -4,7 +4,6 @@
     "devDependencies": {
         "@prisma/client": "^6.8.2",
         "@types/bun": "latest",
-        "@zastix/prisma-generator-typescript-interfaces": "1.4.2",
         "dotenv-cli": "^7.4.4",
         "prisma": "6.19.3"
     },

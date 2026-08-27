@@ -21,7 +21,6 @@
     "@leeoniya/ufuzzy": "^1.0.18",
     "@napi-rs/canvas": "^0.1.71",
     "@prisma/client": "5.18.0",
-    "@zastix/prisma-generator-typescript-interfaces": "^1.4.2",
     "bufferutil": "^4.0.9",
     "discord-api-types": "^0.37.120",
     "discord.js": "^14.20.0",
