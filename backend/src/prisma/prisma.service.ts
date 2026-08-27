@@ -24,7 +24,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     }
 
     async onModuleInit() {
-        // await this.seedDatabase();
+        if (await this.blook.count() === 0) await this.seedDatabase();
         // await this.dev();
 
         // development mode setting handler

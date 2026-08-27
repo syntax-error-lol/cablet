@@ -28,7 +28,9 @@ async function bootstrap() {
     const frontendPath = path.resolve(__dirname, "../../frontend/dist");
     app.use(express.static(frontendPath));
     app.use((req, res, next) => {
-        if (req.method === "GET" && !req.path.startsWith("/api")) return res.sendFile(path.join(frontendPath, "index.html"));
+        if (req.method === "GET" && !req.path.startsWith("/api") && !path.extname(req.path)) {
+            return res.sendFile(path.join(frontendPath, "index.html"));
+        }
 
         next();
     });
