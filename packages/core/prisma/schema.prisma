@@ -1,10 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  // somebody removed this...
-  // DO NOT REMOVE THIS!!!!
-  // I WILL BE VERY VERY ANGRY.
-  // - ellie :)
-  previewFeatures = ["prismaSchemaFolder"]
+  provider = "prisma-client-js"
 }
 
 generator typescriptInterfaces {
