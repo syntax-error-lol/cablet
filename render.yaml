@@ -19,8 +19,6 @@ services:
     startCommand: node backend/dist/main.js
     healthCheckPath: /api
     envVars:
-      - key: SERVER_PORT
-        value: $PORT
       - key: SERVER_TYPE
         value: PROD
       - key: SERVER_BASE_URL
@@ -45,9 +43,9 @@ services:
       - key: SERVER_REGISTRATION_BYPASS_PASSWORD
         value: ""
       - key: VITE_BACKEND_URL
-        value: https://blacket-piyu.onrender.com/
+        value: https://cablet-96ik.onrender.com
       - key: VITE_ALLOWED_ORIGINS
-        value: https://blacket-piyu.onrender.com/
+        value: https://cablet-96ik.onrender.com
       - key: VITE_MEDIA_URL
         value: https://media.blacket.org
       - key: VITE_MEDIA_BACKUP_URL
