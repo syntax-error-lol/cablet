@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import * as express from "express";
 import * as compression from "compression";
+import * as path from "path";
 
 const COMPRESS_PATHS = ["/api/users", "/api/data"];
 
@@ -23,6 +24,14 @@ async function bootstrap() {
     }));
 
     const configService = app.get(ConfigService);
+
+    const frontendPath = path.resolve(__dirname, "../../frontend/dist");
+    app.use(express.static(frontendPath));
+    app.use((req, res, next) => {
+        if (req.method === "GET" && !req.path.startsWith("/api")) return res.sendFile(path.join(frontendPath, "index.html"));
+
+        next();
+    });
 
     const allowedOrigins = configService.get<string>("VITE_ALLOWED_ORIGINS", "")
         .split(",")
